@@ -29,3 +29,25 @@ https://www.elastic.co/downloads/kibana
 
 # 浏览器访问
 http://127.0.0.1:5601
+
+# 设置外网访问
+```
+# vim /usr/local/kibana/config/kibana.yml
+server.host: 0.0.0.0
+
+# ./kibana
+```
+
+# 外网访问
+http://ip:5601
+
+# 重启elasticsearch，关闭 -> 开启
+```
+# fuser -n tcp 5601
+5601/tcp:            52371
+
+# kill -9 52371
+[1]+  Killed                  ./kibana
+
+# ./kibana
+```
