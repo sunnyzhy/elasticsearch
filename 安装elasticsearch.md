@@ -75,3 +75,23 @@ http://127.0.0.1:9200/
   "tagline" : "You Know, for Search"
 }
 ```
+
+# 设置外网访问
+```
+$ vim /usr/local/elasticsearch/config/elasticsearch.yml
+network.host: 0.0.0.0
+
+$ ./elasticsearch -d
+```
+
+# 外网访问
+http://ip:9200/
+
+# 重启elasticsearch，关闭 -> 开启
+```
+$ ps aux | grep elasticsearch
+
+$ kill pid
+
+$ ./elasticsearch -d
+```
