@@ -56,7 +56,7 @@ OpenJDK 64-Bit Server VM warning: If the number of processors is expected to inc
 ```
 
 # 浏览器访问
-http://127.0.0.1:9200/
+http://localhost:9200/
 
 ```
 {
