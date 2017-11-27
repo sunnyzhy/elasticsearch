@@ -56,11 +56,11 @@ https://github.com/medcl/elasticsearch-analysis-ik/releases
 ```
 $ unzip elasticsearch-analysis-ik-6.0.0.zip -d /usr/local/elasticsearch/plugins/
 
-$ cd /usr/local/elasticsearch
-
 $ ps aux | grep elasticsearch
 
 $ kill pid
+
+$ cd /usr/local/elasticsearch
 
 $ ./elasticsearch -d
 ```
