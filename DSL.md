@@ -47,7 +47,7 @@ PUT /_template/my_temp
         "number_of_shards": 5
     },
     "mappings": {
-        "_default_": {
+        "news": {
             "properties": {
                 "title": {
                     "type": "text",
@@ -67,3 +67,4 @@ PUT /_template/my_temp
     }
 }
 ~~~
+
