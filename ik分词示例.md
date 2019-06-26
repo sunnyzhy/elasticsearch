@@ -1,3 +1,8 @@
+# 查看字段的分词结果(V7.2)
+```
+GET /${index}/_termvectors/${id}?fields=${fields_name}
+```
+
 # 默认分词
 - 创建索引
 ```
