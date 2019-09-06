@@ -35,3 +35,12 @@ es 默认的 refresh 间隔时间是 1s ，这也是为什么 ES 可以进行近
 ## flush 操作的时间点
 1. es 的各个 shard 会每个 30 分钟进行一次 flush 操作。
 2. 当 translog 的数据达到某个上限的时候会进行一次 flush 操作。
+
+## 关于translog和flush的一些配置项
+- index.translog.flush_threshold_ops:当发生多少次操作时进行一次flush，默认是 unlimited。
+
+- index.translog.flush_threshold_size:当translog的大小达到此值时会进行一次flush操作，默认是512mb。
+
+- index.translog.flush_threshold_period:在指定的时间间隔内如果没有进行flush操作，会进行一次强制flush操作，默认是30m。
+
+- index.translog.interval:多少时间间隔内会检查一次translog，来进行一次flush操作。es会随机的在这个值到这个值的2倍大小之间进行一次操作，默认是5s。
