@@ -31,6 +31,10 @@ POST /test_1/_doc
   "message": "I like swift."
 }
 
+POST /test_1/_doc
+{
+  "message": "I like smile."
+}
 ```
 
 ## 查询
@@ -56,7 +60,7 @@ GET /test_1/_search
   },
   "hits" : {
     "total" : {
-      "value" : 2,
+      "value" : 3,
       "relation" : "eq"
     },
     "max_score" : 1.0,
@@ -77,6 +81,15 @@ GET /test_1/_search
         "_score" : 1.0,
         "_source" : {
           "message" : "I like swift."
+        }
+      },
+      {
+        "_index" : "test_1",
+        "_type" : "_doc",
+        "_id" : "QAf53W0B7_Xb3VtLyHRP",
+        "_score" : 1.0,
+        "_source" : {
+          "message" : "I like smile."
         }
       }
     ]
