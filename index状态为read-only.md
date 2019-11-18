@@ -14,7 +14,8 @@
 - 修改索引的只读设置
 
 ```
-PUT _settings {
+PUT /_all/_settings
+{
 	"index": {
 		"blocks": {
 			"read_only_allow_delete": "false"
@@ -22,6 +23,8 @@ PUT _settings {
 	}
 }
 ```
+
+**_all 可以修改为具体的索引名称**
 
 ## 官网建议
 
@@ -38,5 +41,3 @@ Then you probably recovered from a full hard drive. The thing is, elasticsearch 
 ```
 curl -XPUT -H "Content-Type: application/json" http://localhost:9200/_all/_settings -d '{"index.blocks.read_only_allow_delete": null}'
 ```
-
-**_all 可以修改为具体的索引名称**
