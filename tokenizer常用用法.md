@@ -78,7 +78,7 @@ PUT /_template/template_zz
 				"type": "long",
 				"index": true
 			},
-			"label": {
+			"name": {
 				"type": "text",
 				"analyzer": "ngram_analyzer",
 				"search_analyzer": "ngram_analyzer",
@@ -86,6 +86,18 @@ PUT /_template/template_zz
 			}
 		}
 	}
+}
+```
+
+查询：
+```json
+GET /yy_1/_search
+{
+  "query": {
+    "match_phrase": {
+      "name": "xxx#yy"
+    }
+  }
 }
 ```
 
@@ -151,7 +163,7 @@ PUT /_template/template_yy
 				"type": "long",
 				"index": true
 			},
-			"label": {
+			"name": {
 				"type": "text",
 				"analyzer": "ngram_analyzer",
 				"search_analyzer": "ngram_analyzer",
