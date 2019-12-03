@@ -23,15 +23,25 @@ token_chars 所接受以下的形式：
 |punctuation|例如 ! or "|
 |symbol|例如 $ or √|
 
-例如英语单词 quick，5 种长度下的 ngram：
+使用此分析器时，需要设置两种不同的大小：一种指定要生成的最小 ngrams（min_gram设置），另一种指定要生成的最大 ngrams。
 
-|length|分词结果|
-|--|--|
-|1|q、u、i、c、k|
-|2|qu、ui、ic、ck|
-|3|qui、uic、ick|
-|4|quic、uick|
-|5|quick|
+在"spaghetti"示例中，如果您指定 min_gram 为 2 且 max_gram 为 3，则您将获得前两个示例中的组合标记：
+```
+sp, spa, pa, pag, ag, agh, gh, ghe, he, het, et, ett, tt, tti, ti
+```
+
+如果你要将 min_gram 设置为 1 并将 max_gram 设置为 3，那么你将得到更多的标记，从 s，sp，spa，p，pa，pag，a，....开始。
+
+以这种方式分析文本具有一个有趣的优点。 当你查询文本时，你的查询将以相同的方式被分割成文本，所以说你正在寻找拼写错误的单词"spaghety"。搜索这个的一种方法是做一个 fuzzy query，它允许你指定单词的编辑距离以检查匹配。 但是你可以通过使用 ngrams 来获得类似的行为。 让我们将原始单词（spaghetti）生成的 bigrams 与拼写错误的单词（spaghety）进行比较：
+```
+"spaghetti" 的 bigrams：sp，pa，ag，gh，he，et，tt，ti
+
+"spaghety" 的 bigrams：sp，pa，ag，gh，he，et，ty
+```
+
+您可以看到六个 token 重叠，因此当查询包含"spaghety"时，其中带有"spaghetti"的单词仍然匹配。请记住，这意味着您可能不打算使用的原始"spaghetti"单词更多的单词 ，所以请务必测试您的查询相关性！
+
+ngrams 做的另一个有用的事情是允许您在事先不了解语言时或者当您使用与其他欧洲语言不同的方式组合单词的语言时分析文本。 这还有一个优点，即能够使用单个分析器处理多种语言，而不必指定。
 
 示例：
 ```json
@@ -81,7 +91,7 @@ PUT /_template/template_zz
 
 # Edge NGram tokenizer
 
-这个分词和 nGram 非常的类似。它会固定词语开始的一边滑动窗口，它的结果取决于 n 的长度设置。
+常规 ngram 拆分的变体称为 edge ngrams，仅从前沿构建 ngram。 
 
 |设置|说明|Default value|
 |--|--|--|
@@ -99,17 +109,12 @@ token_chars 所接受的以下形式：
 |punctuation|例如 ! or "|
 |symbol|例如 $ or √|
 
-例如英语单词 quick，Edge NGram之后的结果：
+在"spaghetti"示例中，如果将 min_gram 设置为 2 并将 max_gram 设置为 6，则会获得以下标记：
+```
+sp, spa, spag, spagh, spaghe
+```
 
-|length|分词结果|
-|--|--|
-|1|q|
-|2|qu|
-|3|qui|
-|4|quic|
-|5|quick|
-
-**因此可以发现，在使用 Edge NGram 建索引时，一个单词会生成好几个索引，而这些索引一定是从首字符开始的。**
+您可以看到每个标记都是从边缘构建的。 这有助于搜索共享相同前缀的单词而无需实际执行前缀查询。 如果你需要从一个单词的后面构建 ngrams，你可以使用 side 属性从后面而不是默认前面获取边缘。
 
 示例：
 ```json
