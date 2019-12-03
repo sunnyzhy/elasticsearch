@@ -91,7 +91,7 @@ PUT /_template/template_zz
 
 查询：
 ```json
-GET /yy_1/_search
+GET /zz_1/_search
 {
   "query": {
     "match_phrase": {
