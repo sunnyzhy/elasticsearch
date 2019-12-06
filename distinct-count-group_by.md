@@ -123,6 +123,119 @@ GET /user/_search
   }
 ```
 
+```
+GET /user/_search
+{
+  "from": 0,
+  "size": 0, 
+  "aggs": {
+    "user_type": { // 聚合名称
+      "terms": { // 等价于group by
+        "field": "user_type",
+        "size": 10,
+        "order": [{
+					"_count": "desc"
+				}]
+      },
+			"aggs": {
+				"user_name": {
+					"top_hits": {
+						"size": 1,
+						"_source": {
+							"includes": [
+								"username"
+							]
+						}
+					}
+				}
+			}
+    }
+  }
+}
+```
+```
+  "aggregations" : {
+    "user_type" : {
+      "doc_count_error_upper_bound" : 0,
+      "sum_other_doc_count" : 0,
+      "buckets" : [
+        {
+          "key" : "普通用户",
+          "doc_count" : 1000483,
+          "name" : {
+            "hits" : {
+              "total" : {
+                "value" : 1000483,
+                "relation" : "eq"
+              },
+              "max_score" : 1.0,
+              "hits" : [
+                {
+                  "_index" : "user",
+                  "_type" : "_doc",
+                  "_id" : "1",
+                  "_score" : 1.0,
+                  "_source" : {
+                    "name" : "aa"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "key" : "管理员",
+          "doc_count" : 1261,
+          "name" : {
+            "hits" : {
+              "total" : {
+                "value" : 1261,
+                "relation" : "eq"
+              },
+              "max_score" : 1.0,
+              "hits" : [
+                {
+                  "_index" : "user",
+                  "_type" : "_doc",
+                  "_id" : "1",
+                  "_score" : 1.0,
+                  "_source" : {
+                    "name" : "aa"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "key" : "超级管理员",
+          "doc_count" : 255,
+          "name" : {
+            "hits" : {
+              "total" : {
+                "value" : 255,
+                "relation" : "eq"
+              },
+              "max_score" : 1.0,
+              "hits" : [
+                {
+                  "_index" : "user",
+                  "_type" : "_doc",
+                  "_id" : "1",
+                  "_score" : 1.0,
+                  "_source" : {
+                    "name" : "aa"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+```
+
 # count + distinct + group by
 ```sql
 SELECT COUNT(DISTINCT(user_name)) FROM user GROUP BY user_type;
