@@ -518,7 +518,5 @@ GET cars/_search
 ```
 
 # 注意事项
-## collapse关键字
-1. 折叠功能 ES5.3 版本之后才发布的
 
-2. 聚合 & 折叠只能针对 keyword 类型有效
+聚合 & 折叠只能针对 keyword 类型有效
