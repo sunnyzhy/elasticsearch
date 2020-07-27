@@ -34,3 +34,21 @@
 - 通过关联字段建立关联，比如：news_id在ES和mysql中要有相同的值。
 
 - 核心数据先通过ES快速获取Id（如news_id）,再通过Mysql二次查询。
+
+# 集群健康
+
+[Cluster health API](https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-health.html)
+
+Health status of the cluster, based on the state of its primary and replica shards. Statuses are:
+
+- **green**
+
+    All shards are assigned.
+
+- **yellow**
+
+    All primary shards are assigned, but one or more replica shards are unassigned. If a node in the cluster fails, some data could be unavailable until that node is repaired.
+
+- **red**
+
+    One or more primary shards are unassigned, so some data is unavailable. This can occur briefly during cluster startup as primary shards are assigned.
