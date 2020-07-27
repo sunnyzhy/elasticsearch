@@ -10,7 +10,7 @@
 手动修改延迟时间：
 
 ```
-curl -XPUT 'localhost:9200/<INDEX_NAME>/_settings' -d 
+curl  -H "Content-type: application/json" -X PUT localhost:9200/<INDEX_NAME>/_settings -d 
 '{
     "settings": {
        "index.unassigned.node_left.delayed_timeout": "30s"
@@ -35,7 +35,7 @@ N >= R + 1
 可以向集群添加更多数据节点或减少副本数。例如减少副本数：
 
 ```
-curl -XPUT 'localhost:9200/<INDEX_NAME>/_settings' -d
+curl -H "Content-type: application/json" -X PUT localhost:9200/<INDEX_NAME>/_settings -d
 '{
     "number_of_replicas": 2
 }'
@@ -46,7 +46,7 @@ curl -XPUT 'localhost:9200/<INDEX_NAME>/_settings' -d
 
 开启重分配：
 
-curl -XPUT 'localhost:9200/_cluster/settings' -d
+curl -H "Content-type: application/json" -X PUT localhost:9200/_cluster/settings -d
 '{ "transient":
     { "cluster.routing.allocation.enable" : "all" 
     }
@@ -61,7 +61,7 @@ curl -XPUT 'localhost:9200/_cluster/settings' -d
 2. 使用Reroute API强制重分配分片
 
 ```
-curl -XPOST'localhost:9200/_cluster/reroute' -d
+curl -H "Content-type: application/json" -X POST localhost:9200/_cluster/reroute -d
 '{ "commands" :
   [ { "allocate_empty_primary" :
       { "index" :"constant-updates", "shard" : 0, "node":"<NODE_NAME>", "accept_data_loss": "true" }
@@ -84,7 +84,7 @@ curl -s 'localhost:9200/_cat/allocation?v'
 cluster.routing.allocation.disk.watermark.low 和/或 cluster.routing.allocation.disk.watermark.high 来增加该值：
 
 ```
-curl -XPUT 'localhost:9200/_cluster/settings' -d
+curl -H "Content-type: application/json" -X PUT localhost:9200/_cluster/settings -d
 '{
     "transient": { 
      "cluster.routing.allocation.disk.watermark.low":"90%"   
@@ -100,7 +100,7 @@ ES集群中存在多版本ES，导致不兼容问题
 # 定位未分配的分片
 ## 1. 查看集群健康状态
 ```
-# curl -XGET localhost:9200/_cluster/health?pretty
+# curl -X GET localhost:9200/_cluster/health?pretty
 {
   "cluster_name" : "zz",
   "status" : "yellow",
@@ -125,7 +125,7 @@ ES集群中存在多版本ES，导致不兼容问题
 ## 2. 定位 unassigned 分片的位置
 
 ```
-# curl -XGET localhost:9200/_cat/shards?h=index,shard,prirep,state,unassigned.reason| grep UNASSIGNED
+# curl -X GET localhost:9200/_cat/shards?h=index,shard,prirep,state,unassigned.reason| grep UNASSIGNED
 ```
 
 每行列出索引的名称、分片编号、是主分片 p 还是副本分片 r、其未分配的原因。
@@ -133,7 +133,7 @@ ES集群中存在多版本ES，导致不兼容问题
 ## 3. 查看未分配分片的具体原因
 
 ```
-# curl -XGET localhost:9200/_cluster/allocation/explain?pretty
+# curl -X GET localhost:9200/_cluster/allocation/explain?pretty
 ```
 
 ### 3.1 已删除的索引
@@ -141,7 +141,7 @@ ES集群中存在多版本ES，导致不兼容问题
 可以直接使用删除命令删除索引：
 
 ```
-curl -XDELETE localhost:9200/<INDEX_NAME>
+curl -X DELETE localhost:9200/<INDEX_NAME>
 ```
 
 ### 3.2 使用中的索引
@@ -149,7 +149,7 @@ curl -XDELETE localhost:9200/<INDEX_NAME>
 - 设置单个索引的副本为 0 ：
 
 ```
-curl -XPUT localhost:9200/<INDEX_NAME>/_settings -d
+curl -H "Content-type: application/json" -X PUT localhost:9200/<INDEX_NAME>/_settings -d
 '{ 
     "index" : { 
         "number_of_replicas" : 0
@@ -160,7 +160,7 @@ curl -XPUT localhost:9200/<INDEX_NAME>/_settings -d
 - 设置所有索引的副本为 0 :
 
 ```
-curl -XPUT localhost:9200/_settings -d
+curl -H "Content-type: application/json" -X PUT localhost:9200/_settings -d
 '{ 
     "index" : { 
         "number_of_replicas" : 0
