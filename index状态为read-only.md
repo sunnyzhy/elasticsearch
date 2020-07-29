@@ -39,5 +39,5 @@ If your elasticsearch is responding with 403 and this message:
 Then you probably recovered from a full hard drive. The thing is, elasticsearch is switching to read-only if it cannot index more documents because your hard drive is full. With this it ensures availability for read-only queries. Elasticsearch will not switch back automatically but you can disable it by sending
 
 ```
-curl -XPUT -H "Content-Type: application/json" http://localhost:9200/_all/_settings -d '{"index.blocks.read_only_allow_delete": null}'
+curl -X PUT -H "Content-Type: application/json" http://localhost:9200/_all/_settings -d '{"index":{"blocks":{"read_only_allow_delete":"false"}}}'
 ```
