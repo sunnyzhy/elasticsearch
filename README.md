@@ -54,7 +54,7 @@ Health status of the cluster, based on the state of its primary and replica shar
     One or more primary shards are unassigned, so some data is unavailable. This can occur briefly during cluster startup as primary shards are assigned.
 
 # 配置用户名和密码
-## 配置 X-Pack
+## 1. 配置 X-Pack
 ```
 # vim ./config/elasticsearch.yml
 
@@ -65,9 +65,9 @@ xpack.security.enabled: true
 xpack.security.transport.ssl.enabled: true
 ```
 
-## 重启 Elasticsearch
+## 2. 重启 Elasticsearch
 
-## 设置 Elasticsearch 的认证密码
+## 3. 设置 Elasticsearch 的认证密码
 ```
 # ./bin/elasticsearch-setup-passwords interactive
 
@@ -104,8 +104,8 @@ Changed password for user [remote_monitoring_user]
 Changed password for user [elastic]
 ```
 
-## 修改 Elasticsearch 的认证密码
-### 方法1
+## 4. 修改 Elasticsearch 的认证密码
+### 4.1. 方法1
 ```
 POST /_security/user/elastic/_password
 {
@@ -113,12 +113,12 @@ POST /_security/user/elastic/_password
 }
 ```
 
-### 方法2
+### 4.2. 方法2
 ```
 # curl --insecure --anyauth -u elastic:old_password -X POST -H "Content-Type: application/json" http://localhost:9200/_security/user/elastic/_password -d '{"password":"123456"}'
 ```
 
-## 配置 Kibana 的认证密码
+## 5. 配置 Kibana 的认证密码
 ```
 # vim ./config/kibana.yml
 
@@ -126,7 +126,7 @@ elasticsearch.username: "elastic"
 elasticsearch.password: "passwd"
 ```
 
-# spring-boot 连接认证
+## 6. spring-boot 连接认证
 ```java
 @Bean
 public RestHighLevelClient client(){
