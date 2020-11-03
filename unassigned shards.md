@@ -100,7 +100,7 @@ ES集群中存在多版本ES，导致不兼容问题
 # 定位未分配的分片
 ## 1. 查看集群健康状态
 ```
-# curl -X GET localhost:9200/_cluster/health?pretty
+curl -X GET localhost:9200/_cluster/health?pretty
 {
   "cluster_name" : "zz",
   "status" : "yellow",
@@ -125,7 +125,7 @@ ES集群中存在多版本ES，导致不兼容问题
 ## 2. 定位 unassigned 分片的位置
 
 ```
-# curl -X GET localhost:9200/_cat/shards?h=index,shard,prirep,state,unassigned.reason| grep UNASSIGNED
+curl -X GET localhost:9200/_cat/shards?h=index,shard,prirep,state,unassigned.reason| grep UNASSIGNED
 ```
 
 每行列出索引的名称、分片编号、是主分片 p 还是副本分片 r、其未分配的原因。
@@ -133,7 +133,7 @@ ES集群中存在多版本ES，导致不兼容问题
 ## 3. 查看未分配分片的具体原因
 
 ```
-# curl -X GET localhost:9200/_cluster/allocation/explain?pretty
+curl -X GET localhost:9200/_cluster/allocation/explain?pretty
 ```
 
 ### 3.1 已删除的索引
@@ -157,6 +157,11 @@ curl -H "Content-type: application/json" -X PUT localhost:9200/<INDEX_NAME>/_set
 }'
 ```
 
+压缩版: 
+```
+curl -H "Content-type: application/json" -X PUT localhost:9200/<INDEX_NAME>/_settings -d '{ "index" : { "number_of_replicas" : 0 } }'
+```
+
 - 设置所有索引的副本为 0 :
 
 ```
@@ -166,4 +171,9 @@ curl -H "Content-type: application/json" -X PUT localhost:9200/_settings -d
         "number_of_replicas" : 0
     } 
 }'
+```
+
+压缩版: 
+```
+curl -H "Content-type: application/json" -X PUT localhost:9200/_settings -d '{ "index" : { "number_of_replicas" : 0 } }'
 ```
