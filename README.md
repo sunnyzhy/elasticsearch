@@ -185,17 +185,17 @@ public RestHighLevelClient client(){
 ### 3.2 迁移所有索引（通配符）
 #### 3.2.1  导出索引的 mapping 结构
 ```bash
-# elasticdump --input=http://elastic:your_password@localhost:9200/index_name_prefix:* --output=/usr/local/elastic/mapping.json --type=mapping
+# elasticdump --input=http://elastic:your_password@localhost:9200/index_name_prefix:* --output=/usr/local/elastic/mapping.json --type=mapping --all=true
 ```
 
 #### 3.2.2  导出索引
 ```bash
-# elasticdump --input=http://elastic:your_password@localhost:9200/index_name_prefix:* --output=/usr/local/elastic/data.json --type=data
+# elasticdump --input=http://elastic:your_password@localhost:9200/index_name_prefix:* --output=/usr/local/elastic/data.json --type=data --all=true
 ```
 
 #### 3.2.3  导入索引的 mapping 结构
 ```bash
-# elasticdump --input=/usr/local/elastic/mapping.json --output=http://elastic:your_password@localhost:9200 --type=mapping
+# elasticdump --input=/usr/local/elastic/mapping.json --output=http://elastic:your_password@localhost:9200 --type=mapping --all=true
 ```
 
 #### 3.2.4  导入索引
