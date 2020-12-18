@@ -162,64 +162,73 @@ public RestHighLevelClient client(){
 
 ## 3. 数据迁移
 ### 3.1 迁移单个索引
-#### 3.1.1  导出索引的 mapping 结构
+#### 3.1.1 导出索引的 mapping 结构
 ```bash
 # elasticdump --input=http://elastic:your_password@localhost:9200/index_name --output=/usr/local/elastic/mapping.json --type=mapping
 ```
 
-#### 3.1.2  导出索引
+#### 3.1.2 导出索引
 ```bash
 # elasticdump --input=http://elastic:your_password@localhost:9200/index_name --output=/usr/local/elastic/data.json --type=data
 ```
 
-#### 3.1.3  导入索引的 mapping 结构
+#### 3.1.3 导入索引的 mapping 结构
 ```bash
 # elasticdump --input=/usr/local/elastic/mapping.json --output=http://elastic:your_password@localhost:9200/index_name --type=mapping
 ```
 
-#### 3.1.4  导入索引
+#### 3.1.4 导入索引
 ```bash
 # elasticdump --input=/usr/local/elastic/data.json --output=http://elastic:your_password@localhost:9200/index_name --type=data
 ```
 
 ### 3.2 迁移所有索引（通配符）
-#### 3.2.1  导出索引的 mapping 结构
+#### 3.2.1 导出新版本索引的 mapping 结构
 ```bash
-# elasticdump --input=http://elastic:your_password@localhost:9200/index_name_prefix:* --output=/usr/local/elastic/mapping.json --type=mapping --all=true
+# elasticdump --input=http://elastic:your_password@localhost:9200 --output=/usr/local/elastic/mapping_current.json --type=mapping --all=true
 ```
 
-#### 3.2.2  导出索引
+**记下 mapping_current.json 里索引 ".security-7" 的 mapping 结构，后面会用到。**
+
+#### 3.2.2 通过通配符导出旧版本索引的 mapping 结构
 ```bash
-# elasticdump --input=http://elastic:your_password@localhost:9200/index_name_prefix:* --output=/usr/local/elastic/data.json --type=data --all=true
+# elasticdump --input=http://elastic:your_password@localhost:9200/index_name_prefix_* --output=/usr/local/elastic/mapping.json --type=mapping --all=true
 ```
 
-#### 3.2.3  导入索引的 mapping 结构
+**把新版本索引 ".security-7" 的 mapping 结构添加到 mapping.json 里。**
+
+#### 3.2.3 导出索引
+```bash
+# elasticdump --input=http://elastic:your_password@localhost:9200/index_name_prefix_* --output=/usr/local/elastic/data.json --type=data --all=true
+```
+
+#### 3.2.4 导入索引的 mapping 结构
 ```bash
 # elasticdump --input=/usr/local/elastic/mapping.json --output=http://elastic:your_password@localhost:9200 --type=mapping --all=true
 ```
 
-#### 3.2.4  导入索引
+#### 3.2.5 导入索引
 ```bash
 # elasticdump --input=/usr/local/elastic/data.json --output=http://elastic:your_password@localhost:9200 --type=data --all=true
 ```
 
 ### 3.3 迁移所有索引
-#### 3.3.1  导出索引的 mapping 结构
+#### 3.3.1 导出索引的 mapping 结构
 ```bash
 # elasticdump --input=http://elastic:your_password@localhost:9200 --output=/usr/local/elastic/mapping.json --type=mapping --all=true
 ```
 
-#### 3.3.2  导出索引
+#### 3.3.2 导出索引
 ```bash
 # elasticdump --input=http://elastic:your_password@localhost:9200 --output=/usr/local/elastic/data.json --type=data --all=true
 ```
 
-#### 3.3.3  导入索引的 mapping 结构
+#### 3.3.3 导入索引的 mapping 结构
 ```bash
 # elasticdump --input=/usr/local/elastic/mapping.json --output=http://elastic:your_password@localhost:9200 --type=mapping --all=true
 ```
 
-#### 3.3.4  导入索引
+#### 3.3.4 导入索引
 ```bash
 # elasticdump --input=/usr/local/elastic/data.json --output=http://elastic:your_password@localhost:9200 --type=data --all=true
 ```
