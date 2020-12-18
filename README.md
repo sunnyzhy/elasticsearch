@@ -164,49 +164,49 @@ public RestHighLevelClient client(){
 ### 3.1 迁移单个索引
 #### 3.1.1  导出索引的 mapping 结构
 ```bash
-# elasticdump --input=http://elastic:your_password@localhost:9200/index_name --output=/usr/local/elastic/mapping --type=mapping
+# elasticdump --input=http://elastic:your_password@localhost:9200/index_name --output=/usr/local/elastic/mapping.json --type=mapping
 ```
 
 #### 3.1.2  导出索引
 ```bash
-# elasticdump --input=http://elastic:your_password@localhost:9200/index_name --output=/usr/local/elastic/data --type=data
+# elasticdump --input=http://elastic:your_password@localhost:9200/index_name --output=/usr/local/elastic/data.json --type=data
 ```
 
 #### 3.1.3  导入索引的 mapping 结构
 ```bash
-# elasticdump --input=/usr/local/elastic/mapping --output=http://elastic:your_password@localhost:9200/index_name --type=mapping
+# elasticdump --input=/usr/local/elastic/mapping.json --output=http://elastic:your_password@localhost:9200/index_name --type=mapping
 ```
 
 #### 3.1.4  导入索引
 ```bash
-# elasticdump --input=/usr/local/elastic/data --output=http://elastic:your_password@localhost:9200/index_name --type=data
+# elasticdump --input=/usr/local/elastic/data.json --output=http://elastic:your_password@localhost:9200/index_name --type=data
 ```
 
 ### 3.2 迁移所有索引
 #### 3.2.1  导出索引的 mapping 结构
 ```bash
-# elasticdump --input=http://elastic:your_password@localhost:9200 --output=/usr/local/elastic/mapping --type=mapping --all=true
+# elasticdump --input=http://elastic:your_password@localhost:9200 --output=/usr/local/elastic/mapping.json --type=mapping --all=true
 ```
 
 #### 3.2.2  导出索引
 ```bash
-# elasticdump --input=http://elastic:your_password@localhost:9200 --output=/usr/local/elastic/data --type=data --all=true
+# elasticdump --input=http://elastic:your_password@localhost:9200 --output=/usr/local/elastic/data.json --type=data --all=true
 ```
 
 #### 3.2.3  导入索引的 mapping 结构
 ```bash
-# elasticdump --input=/usr/local/elastic/mapping --output=http://elastic:your_password@localhost:9200 --type=mapping --all=true
+# elasticdump --input=/usr/local/elastic/mapping.json --output=http://elastic:your_password@localhost:9200 --type=mapping --all=true
 ```
 
 #### 3.2.4  导入索引
 ```bash
-# elasticdump --input=/usr/local/elastic/data --output=http://elastic:your_password@localhost:9200 --type=data --all=true
+# elasticdump --input=/usr/local/elastic/data.json --output=http://elastic:your_password@localhost:9200 --type=data --all=true
 ```
 
 ### 3.3 其它
 - elasticdump 访问 Elasticsearch 时需要账号认证，在 http 后面添加 **username:password@**
    ```bash
-   # elasticdump --input=http://elastic:your_password@localhost:9200/index_name --output=/usr/local/elastic/data --type=data
+   # elasticdump --input=http://elastic:your_password@localhost:9200/index_name --output=/usr/local/elastic/data.json --type=data
    ```
    
-- 更多导入导出方法参照 [elasticdump github](https://github.com/elasticsearch-dump/elasticsearch-dump 'elasticsearch-dump')
+- 更多导入导出方法请参考 [elasticdump github](https://github.com/elasticsearch-dump/elasticsearch-dump 'elasticsearch-dump')
