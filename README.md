@@ -55,7 +55,7 @@ Health status of the cluster, based on the state of its primary and replica shar
 
 # 配置用户名和密码
 ## 1. 配置 X-Pack
-```
+```bash
 # vim ./config/elasticsearch.yml
 
 http.cors.enabled: true
@@ -68,7 +68,7 @@ xpack.security.transport.ssl.enabled: true
 ## 2. 重启 Elasticsearch
 
 ## 3. 设置 Elasticsearch 的认证密码
-```
+```bash
 # ./bin/elasticsearch-setup-passwords interactive
 
 Your cluster health is currently RED.
@@ -114,12 +114,12 @@ POST /_security/user/elastic/_password
 ```
 
 ### 4.2. 方法2
-```
+```bash
 # curl --insecure --anyauth -u elastic:old_password -X POST -H "Content-Type: application/json" http://localhost:9200/_security/user/elastic/_password -d '{"password":"123456"}'
 ```
 
 ## 5. 配置 Kibana 的认证密码
-```
+```bash
 # vim ./config/kibana.yml
 
 elasticsearch.username: "elastic"
@@ -146,3 +146,67 @@ public RestHighLevelClient client(){
     return client;
 }
 ```
+
+# Elasticsearch 迁移升级，数据同步
+## 1. 安装最新版本的 nodejs
+[安装 nodejs](https://github.com/sunnyzhy/nodejs/blob/master/nodejs.md 'nodejs')
+
+如果已经安装过 nodejs，就先卸载旧版本，再安装新版本。
+
+## 2. 安装最新版本的 elasticdump
+[elasticdump github](https://github.com/elasticsearch-dump/elasticsearch-dump 'elasticsearch-dump')
+
+```bash
+# cnpm install elasticdump -g
+```
+
+## 3. 数据迁移
+### 3.1 迁移单个索引
+#### 3.1.1  导出索引的 mapping 结构
+```bash
+# elasticdump --input=http://elastic:your_password@localhost:9200/index_name --output=/usr/local/elastic/mapping --type=mapping
+```
+
+#### 3.1.2  导出索引
+```bash
+# elasticdump --input=http://elastic:your_password@localhost:9200/index_name --output=/usr/local/elastic/data --type=data
+```
+
+#### 3.1.3  导入索引的 mapping 结构
+```bash
+# elasticdump --input=/usr/local/elastic/mapping --output=http://elastic:your_password@localhost:9200/index_name --type=mapping
+```
+
+#### 3.1.4  导入索引
+```bash
+# elasticdump --input=/usr/local/elastic/data --output=http://elastic:your_password@localhost:9200/index_name --type=data
+```
+
+### 3.2 迁移所有索引
+#### 3.2.1  导出索引的 mapping 结构
+```bash
+# elasticdump --input=http://elastic:your_password@localhost:9200 --output=/usr/local/elastic/mapping --type=mapping --all=true
+```
+
+#### 3.2.2  导出索引
+```bash
+# elasticdump --input=http://elastic:your_password@localhost:9200 --output=/usr/local/elastic/data --type=data --all=true
+```
+
+#### 3.2.3  导入索引的 mapping 结构
+```bash
+# elasticdump --input=/usr/local/elastic/mapping --output=http://elastic:your_password@localhost:9200 --type=mapping --all=true
+```
+
+#### 3.2.4  导入索引
+```bash
+# elasticdump --input=/usr/local/elastic/data --output=http://elastic:your_password@localhost:9200 --type=data --all=true
+```
+
+### 3.3 其它
+- elasticdump 访问 Elasticsearch 时需要账号认证，在 http 后面添加 **username:password@**
+   ```bash
+   # elasticdump --input=http://elastic:your_password@localhost:9200/index_name --output=/usr/local/elastic/data --type=data
+   ```
+   
+- 更多导入导出方法参照 [elasticdump github](https://github.com/elasticsearch-dump/elasticsearch-dump 'elasticsearch-dump')
