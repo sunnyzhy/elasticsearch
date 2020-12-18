@@ -209,4 +209,14 @@ public RestHighLevelClient client(){
    # elasticdump --input=http://elastic:your_password@localhost:9200/index_name --output=/usr/local/elastic/data.json --type=data
    ```
    
-- 更多导入导出方法请参考 [elasticdump github](https://github.com/elasticsearch-dump/elasticsearch-dump 'elasticsearch-dump')
+- 本地迁移
+   ```bash
+   # elasticdump --input=http://localhost:9200/index_name --output=/usr/local/elastic/data.json --type=data
+   ```
+
+- 服务器之间迁移
+   ```bash
+   # elasticdump --input=http://192.168.0.100:9200/index_name --output=http://192.168.0.101:9200/index_name --type=data
+   ```
+
+- 更多数据迁移方法请参考 [elasticdump github](https://github.com/elasticsearch-dump/elasticsearch-dump 'elasticsearch-dump')
