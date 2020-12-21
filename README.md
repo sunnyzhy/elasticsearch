@@ -149,9 +149,31 @@ public RestHighLevelClient client(){
 
 # Elasticsearch 迁移升级，数据同步
 ## 1. 安装最新版本的 nodejs
-[安装 nodejs](https://github.com/sunnyzhy/nodejs/blob/master/nodejs.md 'nodejs')
+### 1.1 卸载 nodejs
+#### 1.1.1 使用 yum 先删除一次
+```bash
+# yum -y remove nodejs npm
+```
 
-如果已经安装过 nodejs，就先卸载旧版本，再安装新版本。
+#### 1.1.2 手动删除残留
+- 进入 /usr/local/lib 删除所有 node 和 node_modules文件夹
+- 进入 /usr/local/include 删除所有 node 和 node_modules 文件夹
+- 检查 ~ 文件夹里面的"local" "lib" "include" 文件夹，然后删除里面的所有 "node" 和 "node_modules" 文件夹
+   可以使用以下命令查找：
+   ```bash
+   # find ~/ -name node
+   # find ~/ -name node_modules
+   ```
+
+#### 1.1.3 进入 /usr/local/bin 删除 node 的可执行文件
+- 删除: /usr/local/bin/npm
+- 删除: /usr/local/share/man/man1/node.1
+- 删除: /usr/local/lib/dtrace/node.d
+- 删除: rm -rf /home/[homedir]/.npm
+- 删除: rm -rf /home/root/.npm
+
+### 1.2 最新版本的 nodejs
+[安装 nodejs](https://github.com/sunnyzhy/nodejs/blob/master/nodejs.md 'nodejs')
 
 ## 2. 安装最新版本的 elasticdump
 [elasticdump github](https://github.com/elasticsearch-dump/elasticsearch-dump 'elasticsearch-dump')
