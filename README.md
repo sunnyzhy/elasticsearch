@@ -215,7 +215,7 @@ public RestHighLevelClient client(){
 # elasticdump --input=http://elastic:your_password@localhost:9200/index_name_prefix_* --output=/usr/local/elastic/data.json --type=data --all=true
 ```
 
-**如果报错 "no matches found"，就在通配符前加转义符 "\"**
+**如果报错 "no matches found"，就在通配符前加转义符 "\\"**
 
 ```bash
 # elasticdump --input=http://elastic:your_password@localhost:9200/template_\* --output=/home/saftop/elastic/template.json --type=template --all=true
