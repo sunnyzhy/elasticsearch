@@ -76,9 +76,10 @@ Health status of the cluster, based on the state of its primary and replica shar
 # mv elastic-certificates.p12 ./config
 ```
 
-## 4. 配置证书
+## 4. 开启 ssl 加密通信
 ```bash
 # vim ./config/elasticsearch.yml
+
 xpack.security.enabled: true
 xpack.security.transport.ssl.enabled: true
 xpack.security.transport.ssl.verification_mode: certificate
@@ -87,17 +88,7 @@ xpack.security.transport.ssl.truststore.path: ./elastic-certificates.p12
 ```
 
 # 配置用户名和密码
-## 1. 配置 X-Pack
-```bash
-# vim ./config/elasticsearch.yml
-xpack.security.http.ssl.enabled: true
-xpack.security.http.ssl.keystore.path: ./elastic-certificates.p12
-xpack.security.http.ssl.truststore.path: ./elastic-certificates.p12
-```
-
-## 2. 重启 Elasticsearch
-
-## 3. 设置 Elasticsearch 的认证密码
+## 1. 设置 Elasticsearch 的认证密码
 ```bash
 # ./bin/elasticsearch-setup-passwords interactive
 
@@ -134,8 +125,17 @@ Changed password for user [remote_monitoring_user]
 Changed password for user [elastic]
 ```
 
-## 4. 修改 Elasticsearch 的认证密码
-### 4.1. 方法1
+## 2. 开启 https
+```bash
+# vim ./config/elasticsearch.yml
+
+xpack.security.http.ssl.enabled: true
+xpack.security.http.ssl.keystore.path: ./elastic-certificates.p12
+xpack.security.http.ssl.truststore.path: ./elastic-certificates.p12
+```
+
+## 3. 修改 Elasticsearch 的认证密码
+### 3.1. 方法1
 ```
 POST /_security/user/elastic/_password
 {
@@ -143,12 +143,12 @@ POST /_security/user/elastic/_password
 }
 ```
 
-### 4.2. 方法2
+### 3.2. 方法2
 ```bash
 # curl --insecure --anyauth -u elastic:old_password -X POST -H "Content-Type: application/json" http://localhost:9200/_security/user/elastic/_password -d '{"password":"123456"}'
 ```
 
-## 5. 配置 Kibana 的认证密码
+## 4. 配置 Kibana 的认证密码
 ```bash
 # vim ./config/kibana.yml
 
@@ -156,7 +156,7 @@ elasticsearch.username: "elastic"
 elasticsearch.password: "passwd"
 ```
 
-## 6. spring-boot 连接认证
+## 5. spring-boot 连接认证
 ```java
 @Bean
 public RestHighLevelClient client(){
