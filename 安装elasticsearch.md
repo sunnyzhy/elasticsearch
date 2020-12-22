@@ -1,21 +1,56 @@
-# 官网
-https://www.elastic.co/downloads/elasticsearch
+# 安装 elasticsearch
+[elasticsearch官网](https://www.elastic.co/downloads/elasticsearch 'elasticsearch')
 
-# 安装
-```
+## 安装
+```bash
 # cd /usr/local
 
-# tar -zxvf elasticsearch-6.0.0.tar.gz
+# tar -zxvf elasticsearch-7.10.1-linux-x86_64.tar.gz
 
-# mv elasticsearch-6.0.0 elasticsearch
+# mv elasticsearch-7.10.1-linux-x86_64 elasticsearch
 ```
 
-# 授权非root用户
+## 使用 ES 自带的 JDK
+```bash
+# vim ./bin/elasticsearch-env
+```
+
+把以下配置
+
+```
+# now set the path to java
+if [ ! -z "$JAVA_HOME" ]; then
+  JAVA="$JAVA_HOME/bin/java"
+  JAVA_TYPE="JAVA_HOME"
+else
+  if [ "$(uname -s)" = "Darwin" ]; then
+    # macOS has a different structure
+    JAVA="$ES_HOME/jdk.app/Contents/Home/bin/java"
+  else
+    JAVA="$ES_HOME/jdk/bin/java"
+  fi
+  JAVA_TYPE="bundled jdk"
+fi
+```
+
+修改为：
+
+```
+if [ "$(uname -s)" = "Darwin" ]; then
+  # macOS has a different structure
+  JAVA="$ES_HOME/jdk.app/Contents/Home/bin/java"
+else
+  JAVA="$ES_HOME/jdk/bin/java"
+fi
+JAVA_TYPE="bundled jdk"
+```
+
+## 授权非root用户
 ```
 # chown -R zhy /usr/local/elasticsearch
 ```
 
-# 切换到非root用户 & 启动elasticsearch
+## 切换到非root用户 & 启动elasticsearch
 ```
 # su zhy
 
@@ -55,7 +90,7 @@ OpenJDK 64-Bit Server VM warning: If the number of processors is expected to inc
 [2017-11-22T15:39:55,672][INFO ][o.e.n.Node               ] [3breysr] started
 ```
 
-# 浏览器访问
+## 浏览器访问
 http://localhost:9200/
 
 ```
@@ -76,7 +111,7 @@ http://localhost:9200/
 }
 ```
 
-# 设置外网访问
+## 设置外网访问
 ```
 $ vim /usr/local/elasticsearch/config/elasticsearch.yml
 network.host: 0.0.0.0
@@ -84,10 +119,10 @@ network.host: 0.0.0.0
 $ ./elasticsearch -d
 ```
 
-# 外网访问
+## 外网访问
 http://ip:9200/
 
-# 重启elasticsearch，关闭 -> 开启
+## 重启elasticsearch，关闭 -> 开启
 ```
 $ ps aux | grep elasticsearch
 
