@@ -46,12 +46,12 @@ JAVA_TYPE="bundled jdk"
 ```
 
 ## 授权非root用户
-```
+```bash
 # chown -R zhy /usr/local/elasticsearch
 ```
 
 ## 切换到非root用户 & 启动elasticsearch
-```
+```bash
 # su zhy
 
 $ cd /usr/local/elasticsearch/bin
@@ -60,6 +60,7 @@ $ ./elasticsearch
 ```
 
 ## http 访问
+```bash
 # curl -u elastic:your_password -XGET http://192.168.0.100:9200
 {
   "name" : "node-1",
@@ -81,7 +82,7 @@ $ ./elasticsearch
 ```
 
 ## 设置外网访问
-```
+```bash
 $ vim /usr/local/elasticsearch/config/elasticsearch.yml
 network.host: 0.0.0.0
 
@@ -89,7 +90,7 @@ $ ./elasticsearch -d
 ```
 
 ## 重启elasticsearch，关闭 -> 开启
-```
+```bash
 $ ps aux | grep elasticsearch
 
 $ kill pid
