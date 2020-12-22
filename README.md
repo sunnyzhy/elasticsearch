@@ -83,8 +83,8 @@ Health status of the cluster, based on the state of its primary and replica shar
 xpack.security.enabled: true
 xpack.security.transport.ssl.enabled: true
 xpack.security.transport.ssl.verification_mode: certificate
-xpack.security.transport.ssl.keystore.path: ./elastic-certificates.p12
-xpack.security.transport.ssl.truststore.path: ./elastic-certificates.p12
+xpack.security.transport.ssl.keystore.path: elastic-certificates.p12
+xpack.security.transport.ssl.truststore.path: elastic-certificates.p12
 ```
 
 # 配置用户名和密码
@@ -130,8 +130,8 @@ Changed password for user [elastic]
 # vim ./config/elasticsearch.yml
 
 xpack.security.http.ssl.enabled: true
-xpack.security.http.ssl.keystore.path: ./elastic-certificates.p12
-xpack.security.http.ssl.truststore.path: ./elastic-certificates.p12
+xpack.security.http.ssl.keystore.path: elastic-certificates.p12
+xpack.security.http.ssl.truststore.path: elastic-certificates.p12
 ```
 
 ## 3. 修改 Elasticsearch 的认证密码
