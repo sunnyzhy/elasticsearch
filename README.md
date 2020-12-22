@@ -53,16 +53,46 @@ Health status of the cluster, based on the state of its primary and replica shar
 
     One or more primary shards are unassigned, so some data is unavailable. This can occur briefly during cluster startup as primary shards are assigned.
 
+# 配置安全证书
+## 1. 生成 elastic-stack-ca.p12 证书
+```bash
+# ./bin/elasticsearch-certutil ca
+```
+
+不用对证书设置密码，直接回车就行。此时会生成一个 elastic-stack-ca.p12 证书。
+
+## 2. 生成 elastic-certificates.p12 证书
+```bash
+# ./elasticsearch-certutil cert --ca elastic-stack-ca.p12
+```
+
+同样不用设置密码，直接回车就行。此时会生成一个 elastic-certificates.p12 证书。
+
+## 3. 把生成的证书文件复制到 config 目录下
+
+```bash
+# mv elastic-stack-ca.p12 ./config
+
+# mv elastic-certificates.p12 ./config
+```
+
+## 4. 配置证书
+```bash
+# vim ./config/elasticsearch.yml
+xpack.security.enabled: true
+xpack.security.transport.ssl.enabled: true
+xpack.security.transport.ssl.verification_mode: certificate
+xpack.security.transport.ssl.keystore.path: ./elastic-certificates.p12
+xpack.security.transport.ssl.truststore.path: ./elastic-certificates.p12
+```
+
 # 配置用户名和密码
 ## 1. 配置 X-Pack
 ```bash
 # vim ./config/elasticsearch.yml
-
-http.cors.enabled: true
-http.cors.allow-origin: "*"
-http.cors.allow-headers: Authorization
-xpack.security.enabled: true
-xpack.security.transport.ssl.enabled: true
+xpack.security.http.ssl.enabled: true
+xpack.security.http.ssl.keystore.path: ./elastic-certificates.p12
+xpack.security.http.ssl.truststore.path: ./elastic-certificates.p12
 ```
 
 ## 2. 重启 Elasticsearch
