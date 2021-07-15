@@ -1,6 +1,6 @@
 # FAQ
 
-## java.lang.IllegalStateException: failed to obtain node locks, tried [[/usr/local/elasticsearch/data/elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes]
+## 1. java.lang.IllegalStateException: failed to obtain node locks, tried [[/usr/local/elasticsearch/data/elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes]
 
 ```bash
 $ cd /usr/local/elasticsearch/data
@@ -8,7 +8,7 @@ $ cd /usr/local/elasticsearch/data
 $ rm -rf nodes
 ```
 
-## max file descriptors [4096] for elasticsearch process is too low, increase to at least [65536]
+## 2. max file descriptors [4096] for elasticsearch process is too low, increase to at least [65536]
 
 ```bash
 $ su root
@@ -19,7 +19,7 @@ Password:
 * hard nofile 131072
 ```
 
-## max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
+## 3. max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
 
 ```bash
 $ su root
@@ -32,7 +32,7 @@ vm.max_map_count=655360
 vm.max_map_count = 655360
 ```
 
-## elasticsearch status red
+## 4. elasticsearch status red
 
 ```bash
 # curl GET http://localhost:9200/_cluster/health?level=indices
@@ -40,7 +40,7 @@ vm.max_map_count = 655360
 # curl -XDELETE http://localhost:9200/red_status_index
 ```
 
-## Result window is too large, from + size must be less than or equal to: [10000] but was [10050].
+## 5. Result window is too large, from + size must be less than or equal to: [10000] but was [10050].
 
 如果在 elasticsearch.yml 中增加 index.max_result_window: 20000 配置的话，启动 elasticsearch 会抛出如下异常：
 
@@ -80,7 +80,7 @@ curl -XPUT 'http://localhost:9200/_all/_settings?preserve_existing=true' -d '{
    }
    ```
 
-## totalHits 最大值是 10000
+## 6. totalHits 最大值是 10000
 
 [Track total hits](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-track-total-hits.html "Elasticsearch Reference [7.2] » Track total hits")
 
@@ -110,7 +110,7 @@ curl -XPUT 'http://localhost:9200/_all/_settings?preserve_existing=true' -d '{
    }
    ```
 
-## must filter should must_not的正确用法
+## 7. must filter should must_not的正确用法
 
 [Bool Query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html "Elasticsearch Reference [7.2] » Bool Query")
 
@@ -128,7 +128,7 @@ curl -XPUT 'http://localhost:9200/_all/_settings?preserve_existing=true' -d '{
 因为 should context 下的查询语句可以一个都不满足，所以务必结合 minimum_should_match 使用
 ```
 
-## 查看分词结果
+## 8. 查看分词结果
 
 [Term Vectors](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/docs-termvectors.html "Elasticsearch Reference [7.2] » Term Vectors")
 
@@ -136,7 +136,7 @@ curl -XPUT 'http://localhost:9200/_all/_settings?preserve_existing=true' -d '{
 GET /${index}/_termvectors/${id}?fields=${fields}
 ```
 
-## An HTTP line is larger than 4096 bytes
+## 9. An HTTP line is larger than 4096 bytes
 
 {"type":"too_long_frame_exception","reason":"An HTTP line is larger than 4096 bytes."}，默认情况下ES对请求参数设置为4K，如果遇到请求参数长度限制可以在elasticsearch.yml中修改如下参数：
 
@@ -148,21 +148,21 @@ http.max_header_size: "16k"
 
 [官网配置说明](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html)
 
-## Kibana启动报错：[resource_already_exists_exception]
+## 10. Kibana启动报错：[resource_already_exists_exception]
 
-## 1. 查看 es 索引
+### 1. 查看 es 索引
 
 ```bash
 # curl -u elastic:your_password -X GET http://localhost:9200/_cat/indices
 ```
 
-## 2. 删除 kibana 索引
+### 2. 删除 kibana 索引
 
 ```bash
 # curl -u elastic:your_password -X DELETE http://localhost:9200/.kibana*
 ```
 
-## 429 circuit_breaking_exception Data too large
+## 11. 429 circuit_breaking_exception Data too large
 
 ### 异常信息
 
