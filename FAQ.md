@@ -164,6 +164,24 @@ http.max_header_size: "16k"
 
 ## 11. 429 circuit_breaking_exception Data too large
 
+### 查询所有节点的统计信息
+
+- curl
+   ```bash
+   # curl -u elastic:your_password -X GET http://localhost:9200/_nodes/stats | python -m json.tool
+
+   # curl -u elastic:your_password -X GET http://localhost:9200/_nodes/stats | json
+
+   # curl -u elastic:your_password -X GET http://localhost:9200/_nodes/stats -s | python -m json.tool
+
+   # curl -u elastic:your_password -X GET http://localhost:9200/_nodes/stats -s | json
+   ```
+
+- 控制台命令行
+   ```
+   GET /_nodes/stats
+   ```
+
 ### 异常信息
 
 ```json
@@ -186,6 +204,8 @@ http.max_header_size: "16k"
 }
 ```
 
+***可以在节点的统计信息中搜索 1020054732/972.7mb，对应的字段为 parent.limit_size_in_bytes***
+
 - Data too large, data for [<http_request>] would be [1064145540/1014.8mb], HTTP 请求的数据大小, 即实际需要的内存
 - which is larger than the limit of [1020054732/972.7mb], ES 的内存上限，默认是 JVM 启动内存的 95%
 - real usage: [1064142368/1014.8mb], ES 已经使用的内存, 即 JVM 启动的内存大小
@@ -206,5 +226,5 @@ http.max_header_size: "16k"
    ```
 2. 修改缓冲区
    ```bash
-   # curl -u elastic:password -X PUT -H "Content-Type: application/json" http://localhost:9200/_cluster/settings -d '{"persistent":{"indices.breaker.fielddata.limit":"60%"}}'
+   # curl -u elastic:your_password -X PUT -H "Content-Type: application/json" http://localhost:9200/_cluster/settings -d '{"persistent":{"indices.breaker.fielddata.limit":"60%"}}'
    ```
