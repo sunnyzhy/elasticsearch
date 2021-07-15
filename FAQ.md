@@ -40,6 +40,128 @@ vm.max_map_count = 655360
 # curl -XDELETE http://localhost:9200/red_status_index
 ```
 
+## Result window is too large, from + size must be less than or equal to: [10000] but was [10050].
+
+如果在 elasticsearch.yml 中增加 index.max_result_window: 20000 配置的话，启动 elasticsearch 会抛出如下异常：
+
+```
+*************************************************************************************
+Found index level settings on node level configuration.
+
+Since elasticsearch 5.x index level settings can NOT be set on the nodes 
+configuration like the elasticsearch.yaml, in system properties or command line 
+arguments.In order to upgrade all indices the settings must be updated via the 
+/${index}/_settings API. Unless all settings are dynamic all indices must be closed 
+in order to apply the upgradeIndices created in the future should use index templates 
+to set default values. 
+
+Please ensure all required values are updated on all indices by executing: 
+
+curl -XPUT 'http://localhost:9200/_all/_settings?preserve_existing=true' -d '{
+  "index.max_result_window" : "20000"
+}'
+*************************************************************************************
+```
+
+### 正确的做法
+
+1. 用 curl 命令行
+   ```bash
+   curl -XPUT 'http://localhost:9200/${index}/_settings?preserve_existing=true' -d '{"index.max_result_window" : "20000"}'
+   ```
+
+2. 用 Kibana 命令行
+   ```
+   PUT /${index}/_settings
+   {
+      "index": {
+        "max_result_window": 20000
+      }
+   }
+   ```
+
+## totalHits 最大值是 10000
+
+[Track total hits](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-track-total-hits.html "Elasticsearch Reference [7.2] » Track total hits")
+
+1. 查询匹配的精确计数
+   ```
+   GET twitter/_search
+   {
+       "track_total_hits": true,
+        "query": {
+           "match" : {
+               "message" : "Elasticsearch"
+           }
+        }
+   }
+   ```
+
+2. 查询匹配的最多 N 个计数
+   ```
+   GET twitter/_search
+   {
+       "track_total_hits": 100,
+        "query": {
+           "match" : {
+               "message" : "Elasticsearch"
+           }
+        }
+   }
+   ```
+
+## must filter should must_not的正确用法
+
+[Bool Query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html "Elasticsearch Reference [7.2] » Bool Query")
+
+**特别注意**
+
+- filter
+
+   The clause (query) must appear in matching documents. **However unlike must the score of the query will be ignored.** Filter clauses are executed in filter context, meaning that scoring is ignored and clauses are considered for caching.
+
+- should
+
+   should is roughly equivalent to the boolean OR. **Note that should isn't exactly like a boolean OR,** but we can use it to that effect. 
+
+```
+因为 should context 下的查询语句可以一个都不满足，所以务必结合 minimum_should_match 使用
+```
+
+## 查看分词结果
+
+[Term Vectors](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/docs-termvectors.html "Elasticsearch Reference [7.2] » Term Vectors")
+
+```
+GET /${index}/_termvectors/${id}?fields=${fields}
+```
+
+## An HTTP line is larger than 4096 bytes
+
+{"type":"too_long_frame_exception","reason":"An HTTP line is larger than 4096 bytes."}，默认情况下ES对请求参数设置为4K，如果遇到请求参数长度限制可以在elasticsearch.yml中修改如下参数：
+
+```yml
+http.max_initial_line_length: "8k"
+
+http.max_header_size: "16k"
+```
+
+[官网配置说明](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html)
+
+## Kibana启动报错：[resource_already_exists_exception]
+
+## 1. 查看 es 索引
+
+```bash
+# curl -u elastic:your_password -X GET http://localhost:9200/_cat/indices
+```
+
+## 2. 删除 kibana 索引
+
+```bash
+# curl -u elastic:your_password -X DELETE http://localhost:9200/.kibana*
+```
+
 ## 429 circuit_breaking_exception Data too large
 
 ### 异常信息
