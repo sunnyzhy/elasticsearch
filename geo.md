@@ -45,6 +45,8 @@
    纬度 1 分 ≈ 111km / 60 = 1.85km
    
    纬度 1 秒 ≈ 111km / 3600 ≈ 30.8m
+   
+9. Note: Elasticsearch uses **WGS-84** coordinates only.
 
 ## ES 的地理数据类型
 
