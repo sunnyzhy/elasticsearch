@@ -1,5 +1,7 @@
 # Geography
-## 基本知识
+
+## 一 基础知识
+
 1. 经度: 英文 longitude，缩写 lng 或 lon
 
    纬度：英文 latitude，缩写 lat
@@ -22,7 +24,9 @@
    
    纬度[-90,90]
 
-6. **把地球看作是正球**，以 WGS84 坐标系为例，地球半径是 6378137m，那么:
+6. **把地球看作是正球**，经线周长 = 赤道周长。
+ 
+   以 WGS84 坐标系为例，地球半径是 6378137m，那么:
 
    赤道周长 = 2 * π * 6378137 = 40,075,016.0019724
    
@@ -42,108 +46,9 @@
    
    纬度 1 秒 ≈ 111km / 3600 ≈ 30.8m
 
-## ES 的地图检索方式
-### geo_bounding_box
+## 二 ES 的地理数据类型
 
-geo_bounding_box: 以两个点，确定一个矩形，获取矩形内的全部地理坐标。
+Elasticsearch支持两种类型的地理数据:
 
-查询的结构体:
-
-```json
-GET /<index>/_search
-{
-	"query": {
-		"bool": {
-			"filter": {
-				"geo_bounding_box": {
-					"FIELD": {
-						"top_left": {
-							"lat": 40.73,
-							"lon": -74.1
-						},
-						"bottom_right": {
-							"lat": 40.717,
-							"lon": -73.99
-						}
-					}
-				}
-			}
-		}
-	}
-}
-```
-
-参数说明:
-- FIELD: 自定义的地理位置字段
-- top_left: 左上点的坐标
-- bottom_right: 右下点的坐标
-
-### geo_distance
-
-geo_distance: 以一个点和一个半径，确定一个圆形，获取圆形内的全部地理坐标。
-
-查询的结构体:
-
-```json
-GET /<index>/_search
-{
-	"query": {
-		"bool": {
-			"filter": {
-				"geo_distance": {
-					"distance": "200km",
-					"distance_type": "arc",
-					"FIELD": {
-						"lat": 40.73,
-						"lon": -74.1
-					}
-				}
-			}
-		}
-	}
-}
-```
-
-参数说明:
-- FIELD: 自定义的地理位置字段
-- distance: 半径，单位默认是 m
-- distance_type: 图形的类型，默认是圆形 arc
-
-### geo_polygon
-
-geo_polygon: 以多个点，确定一个多边形，获取多边形内的全部地理坐标。
-
-查询的结构体:
-
-```json
-GET /<index>/_search
-{
-	"query": {
-		"bool": {
-			"filter": {
-				"geo_polygon": {
-					"FIELD": {
-						"points": [{
-								"lat": 40,
-								"lon": -70
-							},
-							{
-								"lat": 30,
-								"lon": -80
-							},
-							{
-								"lat": 20,
-								"lon": -90
-							}
-						]
-					}
-				}
-			}
-		}
-	}
-}
-```
-
-参数说明:
-- FIELD: 自定义的地理位置字段
-- points: 数组，存储多点的坐标，数组的元素个数必须 >= 3
+- geo_point: 描述一个点的地理位置坐标
+- geo_shape: 描述一个不规则区域的地理位置坐标
