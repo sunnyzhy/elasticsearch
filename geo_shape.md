@@ -19,7 +19,7 @@ PUT /example
 
 ## 添加 doc
 
-- type: 必须字段，shape 类型
+- type: 必须字段，shape 类型: Point、LineString、Polygon、MultiPoint、MultiLineString、MultiPolygon、GeometryCollection、Envelope、Circle
 - coordinates: 必须字段，coordinate 的顺序是 longitude, latitude (X, Y)
 
 ### Point
