@@ -139,7 +139,7 @@ POST /example/_doc
 
 ### Envelope
 
-通过指定左上角和右下角，从而确定的边界矩形。
+通过指定左上角和右下角，从而确定的边界矩形。coordinates的数组格式 [[minLon, maxLat], [maxLon, minLat]]
 
 ```json
 POST /example/_doc
