@@ -2,7 +2,7 @@
 
 **index 的 mapping 必须显式声明字段类型为 geo_shape**
 
-## 创建 mapping
+## 1 创建 mapping
 
 ```json
 PUT /example
@@ -17,7 +17,7 @@ PUT /example
 }
 ```
 
-## 添加 doc
+## 2 添加 doc
 
 - type: 必须字段，shape 类型: Point、LineString、Polygon、MultiPoint、MultiLineString、MultiPolygon、GeometryCollection、Envelope、Circle
 - coordinates: 必须字段，coordinate 的顺序是 longitude, latitude (X, Y)
@@ -25,6 +25,8 @@ PUT /example
 ### Point
 
 单个地理坐标。
+
+GeoJSON:
 
 ```json
 POST /example/_doc
@@ -36,10 +38,21 @@ POST /example/_doc
 }
 ```
 
+WKT:
+
+```json
+POST /example/_doc
+{
+  "location" : "POINT (-77.03653 38.897676)"
+}
+```
+
 ### LineString
 
 1. 只指定两个点，表示一条直线
 2. 指定两个以上的点，表示一条任意曲线
+
+GeoJSON:
 
 ```json
 POST /example/_doc
@@ -51,10 +64,21 @@ POST /example/_doc
 }
 ```
 
+WKT:
+
+```json
+POST /example/_doc
+{
+  "location" : "LINESTRING (-77.03653 38.897676, -77.009051 38.889939)"
+}
+```
+
 ### Polygon
 
 1. 多边形必须是闭合的，即第一个点和最后一个点必须相同。
 2. 点的个数必须 >= 4
+
+GeoJSON:
 
 ```json
 POST /example/_doc
@@ -68,7 +92,18 @@ POST /example/_doc
 }
 ```
 
+WKT:
+
+```json
+POST /example/_doc
+{
+  "location" : "POLYGON ((100.0 0.0, 101.0 0.0, 101.0 1.0, 100.0 1.0, 100.0 0.0))"
+}
+```
+
 ### MultiPoint
+
+GeoJSON:
 
 ```json
 POST /example/_doc
@@ -82,7 +117,18 @@ POST /example/_doc
 }
 ```
 
+WKT:
+
+```json
+POST /example/_doc
+{
+  "location" : "MULTIPOINT (102.0 2.0, 103.0 2.0)"
+}
+```
+
 ### MultiLineString
+
+GeoJSON:
 
 ```json
 POST /example/_doc
@@ -98,7 +144,18 @@ POST /example/_doc
 }
 ```
 
+WKT:
+
+```json
+POST /example/_doc
+{
+  "location" : "MULTILINESTRING ((102.0 2.0, 103.0 2.0, 103.0 3.0, 102.0 3.0), (100.0 0.0, 101.0 0.0, 101.0 1.0, 100.0 1.0), (100.2 0.2, 100.8 0.2, 100.8 0.8, 100.2 0.8))"
+}
+```
+
 ### MultiPolygon
+
+GeoJSON:
 
 ```json
 POST /example/_doc
@@ -114,9 +171,20 @@ POST /example/_doc
 }
 ```
 
+WKT:
+
+```json
+POST /example/_doc
+{
+  "location" : "MULTIPOLYGON (((102.0 2.0, 103.0 2.0, 103.0 3.0, 102.0 3.0, 102.0 2.0)), ((100.0 0.0, 101.0 0.0, 101.0 1.0, 100.0 1.0, 100.0 0.0), (100.2 0.2, 100.8 0.2, 100.8 0.8, 100.2 0.8, 100.2 0.2)))"
+}
+```
+
 ### GeometryCollection
 
 点、线、面的集合。
+
+GeoJSON:
 
 ```json
 POST /example/_doc
@@ -137,6 +205,15 @@ POST /example/_doc
 }
 ```
 
+WKT:
+
+```json
+POST /example/_doc
+{
+  "location" : "GEOMETRYCOLLECTION (POINT (100.0 0.0), LINESTRING (101.0 0.0, 102.0 1.0))"
+}
+```
+
 ### Envelope
 
 通过指定左上角和右下角，从而确定的边界矩形。coordinates的数组格式 [[minLon, maxLat], [maxLon, minLat]]
@@ -151,9 +228,22 @@ POST /example/_doc
 }
 ```
 
+WKT:
+
+WKT BBOX format: BBOX (minLon, maxLon, maxLat, minLat)
+
+```json
+POST /example/_doc
+{
+  "location" : "BBOX (100.0, 102.0, 2.0, 0.0)"
+}
+```
+
 ### Circle
 
 由一个圆点和一个半径组成的圆。
+
+The circle type requires a geo_shape field mapping with the deprecated recursive Prefix Tree strategy.
 
 ```json
 PUT /circle-example
@@ -178,7 +268,9 @@ POST /circle-example/_doc
 }
 ```
 
-## ES 的地图检索方式
+**NOTE: Neither GeoJSON or WKT support a point-radius circle type.**
+
+## 3 ES 的地图检索方式
 
 geo_shape 支持以下类型查询:
 - 查询 geo_shape 类型
