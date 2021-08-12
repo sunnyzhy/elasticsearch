@@ -1,8 +1,47 @@
 # geo_shape
 
-**index 的 mapping 必须显式声明字段类型为 geo_shape**
+## 前言
+
+WKT 与 WKB 是开放地理空间联盟 OGC(Open GIS Consortium) 中的简单服务标准 SFS(Simple Features Interface Standard)，但是 GeoJSON 并不是 OGC 中的标准。
+
+- WKT(Well-known text)是 OGC 制定的一种文本标记语言，用于表示矢量几何对象、空间参照系统及空间参照系统之间的转换。
+
+- WKB(well-known binary) 是 WKT 的二进制表示形式。
+
+- GeoJSON 是用 JSON 格式。
+
+GeoJSON format:
+
+```json
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [125.6, 10.1]
+  },
+  "properties": {
+    "name": "Dinagat Islands"
+  }
+}
+```
+
+GeoJSON and WKT to Elasticsearch types:
+
+|GeoJSON Type|WKT Type|Elasticsearch Type|Description|
+|--|--|--|--|
+|Point|POINT|point|A single geographic coordinate. Note: Elasticsearch uses WGS-84 coordinates only.|
+|LineString|LINESTRING|linestring|An arbitrary line given two or more points.|
+|Polygon|POLYGON|polygon|A closed polygon whose first and last point must match, thus requiring n + 1 vertices to create an n-sided polygon and a minimum of 4 vertices.|
+|MultiPoint|MULTIPOINT|multipoint|An array of unconnected, but likely related points.|
+|MultiLineString|MULTILINESTRING|multilinestring|An array of separate linestrings.|
+|MultiPolygon|MULTIPOLYGON|multipolygon|An array of separate polygons.|
+|GeometryCollection|GEOMETRYCOLLECTION|geometrycollection|A GeoJSON shape similar to the multi* shapes except that multiple types can coexist (e.g., a Point and a LineString).|
+|N/A|BBOX|envelope|A bounding rectangle, or envelope, specified by specifying only the top left and bottom right points.|
+|N/A|N/A|circle|A circle specified by a center point and radius with units, which default to METERS.|
 
 ## 1 创建 mapping
+
+**index 的 mapping 必须显式声明字段类型为 geo_shape**
 
 ```json
 PUT /example
@@ -19,24 +58,12 @@ PUT /example
 
 ## 2 添加 doc
 
-|GeoJSON Type|WKT Type|Elasticsearch Type|Description|
-|--|--|--|--|
-|Point|POINT|point|A single geographic coordinate. Note: Elasticsearch uses WGS-84 coordinates only.|
-|LineString|LINESTRING|linestring|An arbitrary line given two or more points.|
-|Polygon|POLYGON|polygon|A closed polygon whose first and last point must match, thus requiring n + 1 vertices to create an n-sided polygon and a minimum of 4 vertices.|
-|MultiPoint|MULTIPOINT|multipoint|An array of unconnected, but likely related points.|
-|MultiLineString|MULTILINESTRING|multilinestring|An array of separate linestrings.|
-|MultiPolygon|MULTIPOLYGON|multipolygon|An array of separate polygons.|
-|GeometryCollection|GEOMETRYCOLLECTION|geometrycollection|A GeoJSON shape similar to the multi* shapes except that multiple types can coexist (e.g., a Point and a LineString).|
-|N/A|BBOX|envelope|A bounding rectangle, or envelope, specified by specifying only the top left and bottom right points.|
-|N/A|N/A|circle|A circle specified by a center point and radius with units, which default to METERS.|
-
 - type: 必须字段，shape 类型: Point、LineString、Polygon、MultiPoint、MultiLineString、MultiPolygon、GeometryCollection、Envelope、Circle
 - coordinates: 必须字段，coordinate 的顺序是 longitude, latitude (X, Y)
 
 ### Point
 
-单个地理坐标。
+单个点的地理坐标。
 
 GeoJSON:
 
