@@ -19,6 +19,18 @@ PUT /example
 
 ## 2 添加 doc
 
+|GeoJSON Type|WKT Type|Elasticsearch Type|Description|
+|--|--|--|--|
+|Point|POINT|point|A single geographic coordinate. Note: Elasticsearch uses WGS-84 coordinates only.|
+|LineString|LINESTRING|linestring|An arbitrary line given two or more points.|
+|Polygon|POLYGON|polygon|A closed polygon whose first and last point must match, thus requiring n + 1 vertices to create an n-sided polygon and a minimum of 4 vertices.|
+|MultiPoint|MULTIPOINT|multipoint|An array of unconnected, but likely related points.|
+|MultiLineString|MULTILINESTRING|multilinestring|An array of separate linestrings.|
+|MultiPolygon|MULTIPOLYGON|multipolygon|An array of separate polygons.|
+|GeometryCollection|GEOMETRYCOLLECTION|geometrycollection|A GeoJSON shape similar to the multi* shapes except that multiple types can coexist (e.g., a Point and a LineString).|
+|N/A|BBOX|envelope|A bounding rectangle, or envelope, specified by specifying only the top left and bottom right points.|
+|N/A|N/A|circle|A circle specified by a center point and radius with units, which default to METERS.|
+
 - type: 必须字段，shape 类型: Point、LineString、Polygon、MultiPoint、MultiLineString、MultiPolygon、GeometryCollection、Envelope、Circle
 - coordinates: 必须字段，coordinate 的顺序是 longitude, latitude (X, Y)
 
