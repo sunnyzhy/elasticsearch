@@ -1,6 +1,50 @@
 # FAQ
 
-## 1. java.lang.IllegalStateException: failed to obtain node locks, tried [[/usr/local/elasticsearch/data/elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes]
+## 1 blocked by: [FORBIDDEN/12/index read-only / allow delete (api)]
+
+### 问题原因
+1. 这是由于ES新节点的数据目录data存储空间不足，导致从master主节点接收同步数据的时候失败，此时ES集群为了保护数据，会自动把索引分片index置为只读read-only
+
+2. 即使磁盘扩容了，但是在扩容之前（也就是磁盘空间不足的时候），对索引进行了写入的操作，由于 ES 的保护机制，会将该索引置为只读状态。所以扩容之后，依旧会提示上述错误
+
+**不管是哪种情况，都是因为存储空间不足引起的。**
+
+
+### 解决方案
+- 提供足够的存储空间供数据写入，如需在配置文件中更改ES数据存储目录，注意重启ES
+
+- 修改索引的只读设置
+
+```
+PUT /_all/_settings
+{
+	"index": {
+		"blocks": {
+			"read_only_allow_delete": "false"
+		}
+	}
+}
+```
+
+**_all 可以修改为具体的索引名称**
+
+### 官网建议
+
+If your elasticsearch is responding with 403 and this message:
+```
+{
+  "type": "cluster_block_exception",
+  "reason": "blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];"
+}
+```
+
+Then you probably recovered from a full hard drive. The thing is, elasticsearch is switching to read-only if it cannot index more documents because your hard drive is full. With this it ensures availability for read-only queries. Elasticsearch will not switch back automatically but you can disable it by sending
+
+```
+curl -X PUT -H "Content-Type: application/json" http://localhost:9200/_all/_settings -d '{"index":{"blocks":{"read_only_allow_delete":"false"}}}'
+```
+
+## 2 java.lang.IllegalStateException: failed to obtain node locks, tried [[/usr/local/elasticsearch/data/elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes]
 
 ```bash
 $ cd /usr/local/elasticsearch/data
@@ -8,7 +52,7 @@ $ cd /usr/local/elasticsearch/data
 $ rm -rf nodes
 ```
 
-## 2. max file descriptors [4096] for elasticsearch process is too low, increase to at least [65536]
+## 3 max file descriptors [4096] for elasticsearch process is too low, increase to at least [65536]
 
 ```bash
 $ su root
@@ -19,7 +63,7 @@ Password:
 * hard nofile 131072
 ```
 
-## 3. max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
+## 4 max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
 
 ```bash
 $ su root
@@ -32,7 +76,7 @@ vm.max_map_count=655360
 vm.max_map_count = 655360
 ```
 
-## 4. elasticsearch status red
+## 5 elasticsearch status red
 
 ```bash
 # curl GET http://localhost:9200/_cluster/health?level=indices
@@ -40,7 +84,7 @@ vm.max_map_count = 655360
 # curl -XDELETE http://localhost:9200/red_status_index
 ```
 
-## 5. Result window is too large, from + size must be less than or equal to: [10000] but was [10050].
+## 6 Result window is too large, from + size must be less than or equal to: [10000] but was [10050].
 
 如果在 elasticsearch.yml 中增加 index.max_result_window: 20000 配置的话，启动 elasticsearch 会抛出如下异常：
 
@@ -80,7 +124,7 @@ curl -XPUT 'http://localhost:9200/_all/_settings?preserve_existing=true' -d '{
    }
    ```
 
-## 6. totalHits 最大值是 10000
+## 7 totalHits 最大值是 10000
 
 [Track total hits](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-track-total-hits.html "Elasticsearch Reference [7.2] » Track total hits")
 
@@ -110,7 +154,7 @@ curl -XPUT 'http://localhost:9200/_all/_settings?preserve_existing=true' -d '{
    }
    ```
 
-## 7. must filter should must_not的正确用法
+## 8 must filter should must_not的正确用法
 
 [Bool Query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html "Elasticsearch Reference [7.2] » Bool Query")
 
@@ -128,7 +172,7 @@ curl -XPUT 'http://localhost:9200/_all/_settings?preserve_existing=true' -d '{
 因为 should context 下的查询语句可以一个都不满足，所以务必结合 minimum_should_match 使用
 ```
 
-## 8. 查看分词结果
+## 9 查看分词结果
 
 [Term Vectors](https://www.elastic.co/guide/en/elasticsearch/reference/7.2/docs-termvectors.html "Elasticsearch Reference [7.2] » Term Vectors")
 
@@ -136,7 +180,7 @@ curl -XPUT 'http://localhost:9200/_all/_settings?preserve_existing=true' -d '{
 GET /${index}/_termvectors/${id}?fields=${fields}
 ```
 
-## 9. An HTTP line is larger than 4096 bytes
+## 10 An HTTP line is larger than 4096 bytes
 
 {"type":"too_long_frame_exception","reason":"An HTTP line is larger than 4096 bytes."}，默认情况下ES对请求参数设置为4K，如果遇到请求参数长度限制可以在elasticsearch.yml中修改如下参数：
 
@@ -148,7 +192,7 @@ http.max_header_size: "16k"
 
 [官网配置说明](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html)
 
-## 10. Kibana启动报错：[resource_already_exists_exception]
+## 11 Kibana启动报错：[resource_already_exists_exception]
 
 ### 1. 查看 es 索引
 
@@ -162,7 +206,7 @@ http.max_header_size: "16k"
 # curl -u elastic:your_password -X DELETE http://localhost:9200/.kibana*
 ```
 
-## 11. 429 circuit_breaking_exception Data too large
+## 12 429 circuit_breaking_exception Data too large
 
 ### 查询所有节点的统计信息
 
@@ -228,3 +272,40 @@ http.max_header_size: "16k"
    ```bash
    # curl -u elastic:your_password -X PUT -H "Content-Type: application/json" http://localhost:9200/_cluster/settings -d '{"persistent":{"indices.breaker.fielddata.limit":"60%"}}'
    ```
+
+## 13 this action would add [10] total shards, but this cluster currently has [995]/[1000] maximum shards open;
+
+### 问题
+
+原因是因为本次需要生成 10 个分片，但是分片数达到了上限，默认只允许 1000 个分片，问题是因为集群分片数不足引起的。
+
+### 分析
+
+从 Elasticsearch v7.0.0 开始，集群中的每个节点默认限制 1000 个 shard，如果你的 es 集群有 2 个数据节点，那么最多 2000 shards。
+
+```
+Elasticsearch 中的数据组织成索引。每一个索引由一个或多个分片组成。每个分片是 Luncene 索引的一个实例，你可以把实例理解成自管理的搜索引擎，用于在 Elasticsearch 集群中对一部分数据进行索引和处理查询。
+```
+
+当然并不是分片数越多越好，一般分片数多少与内存挂钩，您可以在集群节点上保存的分片数量与您可用的堆内存大小成正比。
+
+一个很好的经验法则是：
+
+确保每个节点的分片数量保持在低于每 1GB 堆内存对应集群的分片在 20-25 之间。
+
+因此，具有 30GB 堆内存的节点最多可以有 600-750 个分片，但是进一步低于此限制，您可以保持更好。 这通常会帮助群体保持处于健康状态。
+
+```
+提示：避免有非常大的分片，因为大的分片可能会对集群从故障中恢复的能力产生负面影响。
+对于多大的分片没有固定的限制，但是分片大小为 50GB 通常被界定为适用于各种用例的限制。
+```
+
+### 解决办法
+
+```bash
+# curl -u elastic:saftop9854 -XPUT -H "Content-Type:application/json" http://localhost:9200/_cluster/settings -d '{"transient":{"cluster":{"max_shards_per_node":2000}}}'
+{"acknowledged":true,"persistent":{},"transient":{"cluster":{"max_shards_per_node":"2000"}}}
+
+# curl -XGET -u elastic:saftop9854 http://localhost:9200/_cluster/settings
+{"persistent":{},"transient":{"cluster":{"max_shards_per_node":"2000"}}}
+```
