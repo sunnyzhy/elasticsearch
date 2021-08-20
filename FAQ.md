@@ -303,9 +303,9 @@ Elasticsearch 中的数据组织成索引。每一个索引由一个或多个分
 ### 解决办法
 
 ```bash
-# curl -u elastic:saftop9854 -XPUT -H "Content-Type:application/json" http://localhost:9200/_cluster/settings -d '{"transient":{"cluster":{"max_shards_per_node":2000}}}'
+# curl -u elastic:password -XPUT -H "Content-Type:application/json" http://localhost:9200/_cluster/settings -d '{"transient":{"cluster":{"max_shards_per_node":2000}}}'
 {"acknowledged":true,"persistent":{},"transient":{"cluster":{"max_shards_per_node":"2000"}}}
 
-# curl -XGET -u elastic:saftop9854 http://localhost:9200/_cluster/settings
+# curl -XGET -u elastic:password http://localhost:9200/_cluster/settings
 {"persistent":{},"transient":{"cluster":{"max_shards_per_node":"2000"}}}
 ```
