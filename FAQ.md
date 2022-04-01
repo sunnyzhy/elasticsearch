@@ -41,7 +41,7 @@ If your elasticsearch is responding with 403 and this message:
 Then you probably recovered from a full hard drive. The thing is, elasticsearch is switching to read-only if it cannot index more documents because your hard drive is full. With this it ensures availability for read-only queries. Elasticsearch will not switch back automatically but you can disable it by sending
 
 ```
-curl -X PUT -H "Content-Type: application/json" http://localhost:9200/_all/_settings -d '{"index":{"blocks":{"read_only_allow_delete":"false"}}}'
+curl -u elastic:password -XPUT -H "Content-Type: application/json" http://localhost:9200/_all/_settings -d '{"index":{"blocks":{"read_only_allow_delete":"false"}}}'
 ```
 
 ## 2 java.lang.IllegalStateException: failed to obtain node locks, tried [[/usr/local/elasticsearch/data/elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes]
@@ -308,4 +308,16 @@ Elasticsearch 中的数据组织成索引。每一个索引由一个或多个分
 
 # curl -XGET -u elastic:password http://localhost:9200/_cluster/settings
 {"persistent":{},"transient":{"cluster":{"max_shards_per_node":"2000"}}}
+```
+
+## 14 TOO_MANY_REQUESTS/12/disk usage exceeded flood-stage watermark, index has read-only-allow-delete block
+
+### 原因
+
+因为一次请求中批量插入的数据条数巨多，以及短时间内的请求次数巨多引起ES节点服务器内存超过限制，ES主动给索引上锁。
+
+### 解决办法
+
+```bash
+curl -u elastic:password -H "Content-type: application/json" -X PUT http://localhost:9200/_all/_settings -d '{ "index.blocks.read_only_allow_delete": null }'
 ```
