@@ -78,10 +78,22 @@ vm.max_map_count = 655360
 
 ## 5 elasticsearch status red
 
-```bash
-# curl GET http://localhost:9200/_cluster/health?level=indices
+### 单机
 
-# curl -XDELETE http://localhost:9200/red_status_index
+```bash
+# curl -u elastic:elastic -XGET http://localhost:9200/_cat/health?v
+
+# curl -u elastic:elastic -XGET http://localhost:9200/_cat/indices?v
+
+# curl -u elastic:elastic -XDELETE http://localhost:9200/<red_status_index>
+```
+
+### 集群
+
+```bash
+# curl -u elastic:elastic -XGET http://localhost:9200/_cluster/health?level=indices
+
+# curl -u elastic:elastic -XDELETE http://localhost:9200/<red_status_index>
 ```
 
 ## 6 Result window is too large, from + size must be less than or equal to: [10000] but was [10050].
