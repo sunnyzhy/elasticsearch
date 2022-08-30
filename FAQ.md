@@ -81,20 +81,42 @@ vm.max_map_count = 655360
 ### 单机
 
 ```bash
-# curl -u elastic:elastic -XGET http://localhost:9200/_cat/health?v
+# curl -u elastic:elastic -X GET http://localhost:9200/_cat/health?v
 
-# curl -u elastic:elastic -XGET http://localhost:9200/_cat/indices?v
+# curl -u elastic:elastic -X GET http://localhost:9200/_cat/indices?v
 
-# curl -u elastic:elastic -XDELETE http://localhost:9200/<red_status_index>
+# curl -u elastic:elastic -X DELETE http://localhost:9200/<red_status_index>
 ```
 
 ### 集群
 
 ```bash
-# curl -u elastic:elastic -XGET http://localhost:9200/_cluster/health?level=indices
+# curl -u elastic:elastic -X GET http://localhost:9200/_cluster/health?level=indices
 
-# curl -u elastic:elastic -XDELETE http://localhost:9200/<red_status_index>
+# curl -u elastic:elastic -X DELETE http://localhost:9200/<red_status_index>
 ```
+
+### 删除部分数据
+
+示例，删除 ```8:00 - 10:00 ``` 之间的全部数据:
+
+```bash
+# curl -u elastic:elastic -X POST "http://localhost:9200/<red_status_index>/_delete_by_query?pretty" -H 'Content-Type: application/json' -d'
+{
+  "query": {
+    "range": {
+      "@timestamp": {
+        "gte": "now-3h",
+        "lt": "now-1h"
+      }
+    }
+  }
+}'
+
+# curl -u elastic:elastic -X POST http://localhost:9200/<red_status_index>/_forcemerge?max_num_segments=1&only_expunge_deletes=true
+```
+
+***注: 删除的时候，依据实际情况适当设置时间戳的范围。***
 
 ## 6 Result window is too large, from + size must be less than or equal to: [10000] but was [10050].
 
