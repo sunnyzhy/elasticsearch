@@ -1,10 +1,6 @@
 # 安装 kibana
 
-## 官网
-
-```
-https://www.elastic.co/downloads/kibana
-```
+[kibana官网](https://www.elastic.co/downloads/kibana 'kibana')
 
 ## 修改 kibana_system 用户的密码
 
