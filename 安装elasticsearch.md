@@ -1,130 +1,99 @@
 # 安装 elasticsearch
-
 [elasticsearch官网](https://www.elastic.co/downloads/elasticsearch 'elasticsearch')
 
 ## 安装
-
 ```bash
-# tar -zxvf /usr/local/elasticsearch-8.4.1-linux-x86_64.tar.gz -C /usr/local
+# cd /usr/local
 
-# vim /usr/local/elasticsearch-8.4.1/config/elasticsearch.yml
+# tar -zxvf elasticsearch-7.10.1-linux-x86_64.tar.gz
+
+# mv elasticsearch-7.10.1-linux-x86_64 elasticsearch
 ```
 
-```yml
-network.host: 0.0.0.0
-```
-
-## 添加非 root 用户
-
+## 使用 ES 自带的 JDK
 ```bash
-# groupadd zhy
-
-# useradd zhy -g zhy -p zhy
-
-# chown -R zhy:zhy /usr/local/elasticsearch-8.4.1
-
-# echo "* soft nofile 65536" >> /etc/security/limits.conf
-
-# echo "* hard nofile 65536" >> /etc/security/limits.conf
-
-# echo "vm.max_map_count=655360" >> /etc/sysctl.conf
-
-# sysctl -p
+# vim ./bin/elasticsearch-env
 ```
 
-## 启动 elasticsearch
+把以下配置
 
-***注: 必须使用非 root 账号启动 elasticsearch***
+```
+# now set the path to java
+if [ ! -z "$JAVA_HOME" ]; then
+  JAVA="$JAVA_HOME/bin/java"
+  JAVA_TYPE="JAVA_HOME"
+else
+  if [ "$(uname -s)" = "Darwin" ]; then
+    # macOS has a different structure
+    JAVA="$ES_HOME/jdk.app/Contents/Home/bin/java"
+  else
+    JAVA="$ES_HOME/jdk/bin/java"
+  fi
+  JAVA_TYPE="bundled jdk"
+fi
+```
 
+修改为：
+
+```
+if [ "$(uname -s)" = "Darwin" ]; then
+  # macOS has a different structure
+  JAVA="$ES_HOME/jdk.app/Contents/Home/bin/java"
+else
+  JAVA="$ES_HOME/jdk/bin/java"
+fi
+JAVA_TYPE="bundled jdk"
+```
+
+## 授权非root用户
 ```bash
-# su - zhy -c '/usr/local/elasticsearch-8.4.1/bin/elasticsearch -d' &
+# chown -R zhy /usr/local/elasticsearch
 ```
 
-elasticsearch8 会自动开启 xpack，即启动成功之后:
+## 切换到非root用户 & 启动elasticsearch
+```bash
+# su zhy
 
-1. 在 ```config/certs``` 的目录下自动生成自签名证书:
+$ cd /usr/local/elasticsearch/bin
 
-    ```bash
-    # tree /usr/local/elasticsearch-8.4.1/config
-    /usr/local/elasticsearch-8.4.1/config
-    ├── certs
-    │   ├── http_ca.crt
-    │   ├── http.p12
-    │   └── transport.p12
-    ├── elasticsearch.keystore
-    ├── elasticsearch-plugins.example.yml
-    ├── elasticsearch.yml
-    ├── jvm.options
-    ├── jvm.options.d
-    ├── log4j2.properties
-    ├── role_mapping.yml
-    ├── roles.yml
-    ├── users
-    └── users_roles
-    ```
-
-2. 在 ```elasticsearch.yml``` 里自动添加以下配置:
-
-    ```yml
-    #----------------------- BEGIN SECURITY AUTO CONFIGURATION -----------------------
-    #
-    # The following settings, TLS certificates, and keys have been automatically      
-    # generated to configure Elasticsearch security features on 16-09-2022 01:35:28
-    #
-    # --------------------------------------------------------------------------------
-
-    # Enable security features
-    xpack.security.enabled: true
-
-    xpack.security.enrollment.enabled: true
-
-    # Enable encryption for HTTP API client connections, such as Kibana, Logstash, and Agents
-    xpack.security.http.ssl:
-      enabled: true
-      keystore.path: certs/http.p12
-
-    # Enable encryption and mutual authentication between cluster nodes
-    xpack.security.transport.ssl:
-      enabled: true
-      verification_mode: certificate
-      keystore.path: certs/transport.p12
-      truststore.path: certs/transport.p12
-    # Create a new cluster with the current node only
-    # Additional nodes can still join the cluster later
-    cluster.initial_master_nodes: ["node1"]
-
-    #----------------------- END SECURITY AUTO CONFIGURATION -------------------------
-    ```
+$ ./elasticsearch
+```
 
 ## http 访问
-
 ```bash
-# curl --cacert /usr/local/elasticsearch-8.4.1/config/certs/http_ca.crt -u elastic:elastic -XGET https://192.168.0.10:9200
+# curl -u elastic:your_password -XGET http://192.168.0.100:9200
 {
-  "name" : "node1",
-  "cluster_name" : "elasticsearch",
-  "cluster_uuid" : "cewXlORZQaegCUa9oPtweQ",
+  "name" : "node-1",
+  "cluster_name" : "zhy",
+  "cluster_uuid" : "KDc8wiESR-OVkC9_-Kqxog",
   "version" : {
-    "number" : "8.4.1",
+    "number" : "7.10.1",
     "build_flavor" : "default",
     "build_type" : "tar",
-    "build_hash" : "2bd229c8e56650b42e40992322a76e7914258f0c",
-    "build_date" : "2022-08-26T12:11:43.232597118Z",
+    "build_hash" : "1c34507e66d7db1211f66f3513706fdf548736aa",
+    "build_date" : "2020-12-05T01:00:33.671820Z",
     "build_snapshot" : false,
-    "lucene_version" : "9.3.0",
-    "minimum_wire_compatibility_version" : "7.17.0",
-    "minimum_index_compatibility_version" : "7.0.0"
+    "lucene_version" : "8.7.0",
+    "minimum_wire_compatibility_version" : "6.8.0",
+    "minimum_index_compatibility_version" : "6.0.0-beta1"
   },
   "tagline" : "You Know, for Search"
 }
 ```
 
-## 重启 elasticsearch
-
+## 设置外网访问
 ```bash
-# ps aux | grep elasticsearch
+$ vim /usr/local/elasticsearch/config/elasticsearch.yml
+network.host: 0.0.0.0
 
-# kill pid
+$ ./elasticsearch -d
+```
 
-# su - zhy -c '/usr/local/elasticsearch-8.4.1/bin/elasticsearch -d' &
+## 重启elasticsearch，关闭 -> 开启
+```bash
+$ ps aux | grep elasticsearch
+
+$ kill pid
+
+$ ./elasticsearch -d
 ```
