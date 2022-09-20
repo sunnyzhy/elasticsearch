@@ -74,6 +74,15 @@ elasticsearch:
 
 ### 验证证书
 
+在 application.yml 里添加以下配置（跳过应用启动时对 elasticsearch 状态的健康检查，不然会报异常 ```General SSLEngine problem```）:
+
+```yml
+management:
+  health:
+    elasticsearch:
+      enabled: false
+```
+
 ```java
 @ConfigurationProperties(prefix = "elasticsearch")
 @Configuration
