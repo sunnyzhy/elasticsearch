@@ -158,8 +158,6 @@ elasticsearch.password: "passwd"
 
 ## 5. spring-boot 连接认证
 
-连接 ```elasticsearch 7.x http```:
-
 ```java
 @Bean
 public RestHighLevelClient client(){
@@ -177,55 +175,6 @@ public RestHighLevelClient client(){
             });
     RestHighLevelClient client = new RestHighLevelClient(builder);
     return client;
-}
-```
-
-连接 ```elasticsearch 8.x https(忽略证书)```:
-
-```java
-@Bean
-public ElasticsearchClient elasticsearchClient() throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-    //  设置账号密码
-    final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-    credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("elastic", "123456"));
-    //  忽略证书
-    SSLContext sslContext = SSLContext.getInstance("SSL");
-    TrustManager[] trustAllCerts = new TrustManager[]{
-            new X509TrustManager() {
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    return null;
-                }
-
-                @Override
-                public void checkClientTrusted(X509Certificate[] certs, String authType) {
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                }
-            }
-    };
-    sslContext.init(null, trustAllCerts, new SecureRandom());
-    RestClient client = RestClient
-            .builder(new HttpHost("127.0.0.1",9200, "https"))
-            .setRequestConfigCallback(builder -> {
-                builder.setConnectionRequestTimeout(5000);
-                builder.setSocketTimeout(30000);
-                return builder;
-            })
-            .setHttpClientConfigCallback(httpAsyncClientBuilder -> httpAsyncClientBuilder
-                    .setDefaultCredentialsProvider(credentialsProvider)
-                    .setSSLContext(sslContext)
-                    .setSSLHostnameVerifier(new HostnameVerifier() {
-                        @Override
-                        public boolean verify(String s, SSLSession sslSession) {
-                            return true;
-                        }
-                    }))
-            .build();
-    RestClientTransport restClientTransport = new RestClientTransport(client, new JacksonJsonpMapper());
-    return new ElasticsearchClient(restClientTransport);
 }
 ```
 
