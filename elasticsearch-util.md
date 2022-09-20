@@ -65,7 +65,10 @@ elasticsearch:
   crt: http_ca.crt
 ```
 
-注: ```http_ca.crt``` 证书在 ```resources``` 目录下，与 ```application.yml``` 同级。
+注: 
+
+1. ```http_ca.crt``` 复制的是 ```elasticsearch``` 服务器里的 ```config/certs/http_ca.crt```
+2. ```http_ca.crt``` 证书在 ```resources``` 目录下，与 ```application.yml``` 同级
 
 ## ElasticsearchClient
 
