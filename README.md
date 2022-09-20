@@ -97,6 +97,51 @@ elasticsearch.password: "password"
 
 ### 5. spring-boot 连接认证
 
+添加依赖:
+
+```xml
+<properties>
+    <elastic.version>8.4.1</elastic.version>
+    <jakarta.version>2.0.1</jakarta.version>
+    <jackson.version>2.12.3</jackson.version>
+</properties>
+
+<dependencies>
+    <dependency>
+        <groupId>co.elastic.clients</groupId>
+        <artifactId>elasticsearch-java</artifactId>
+        <version>${elastic.version}</version>
+        <exclusions>
+            <exclusion>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-client</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>jakarta.json</groupId>
+                <artifactId>jakarta.json-api</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    <dependency>
+        <groupId>org.elasticsearch.client</groupId>
+        <artifactId>elasticsearch-rest-client</artifactId>
+        <version>${elastic.version}</version>
+        <scope>compile</scope>
+    </dependency>
+    <dependency>
+        <groupId>jakarta.json</groupId>
+        <artifactId>jakarta.json-api</artifactId>
+        <version>${jakarta.version}</version>
+        <scope>compile</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+    </dependency>
+</dependencies>
+```
+
 ```https(忽略证书)```:
 
 ```java
