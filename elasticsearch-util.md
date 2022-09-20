@@ -45,52 +45,193 @@
 </dependencies>
 ```
 
+## application.yml
+
+```yml
+server:
+  port: 8080
+spring:
+  application:
+    name: elastic-app
+  elasticsearch:
+    uris: https://${elasticsearch.hosts}
+    username: ${elasticsearch.username}
+    password: ${elasticsearch.password}
+
+elasticsearch:
+  username: elastic
+  password: elastic
+  hosts: 192.168.0.10:9200
+  crt: http_ca.crt
+```
+
+注: ```http_ca.crt``` 证书在 ```resources``` 目录下，与 ```application.yml``` 同级。
+
 ## ElasticsearchClient
 
+### 验证证书
+
 ```java
-@Bean
-public ElasticsearchClient elasticsearchClient() throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-    //  设置账号密码
-    final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-    credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("elastic", "123456"));
-    //  忽略证书
-    SSLContext sslContext = SSLContext.getInstance("SSL");
-    TrustManager[] trustAllCerts = new TrustManager[]{
-            new X509TrustManager() {
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    return null;
-                }
+@ConfigurationProperties(prefix = "elasticsearch")
+@Configuration
+public class ElasticsearchBean {
+    @Setter
+    private String hosts;
 
-                @Override
-                public void checkClientTrusted(X509Certificate[] certs, String authType) {
-                }
+    @Setter
+    private String username;
 
-                @Override
-                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+    @Setter
+    private String password;
+
+    @Setter
+    private String crt;
+
+    @Bean
+    public ElasticsearchClient elasticsearchClient() throws Exception {
+        //  解析 HttpHost
+        HttpHost[] hosts = getHttpHost();
+
+        //  设置账号密码
+        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+
+        // 生成 SSLContext
+        SSLContext sslContext = buildSSLContext();
+
+        RestClient client = RestClient
+                .builder(hosts)
+                .setRequestConfigCallback(builder -> {
+                    builder.setConnectionRequestTimeout(5000);
+                    builder.setSocketTimeout(30000);
+                    return builder;
+                })
+                .setHttpClientConfigCallback(httpAsyncClientBuilder -> httpAsyncClientBuilder
+                        .setSSLContext(sslContext)
+                        .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                        .setDefaultCredentialsProvider(credentialsProvider))
+                .build();
+        RestClientTransport restClientTransport = new RestClientTransport(client, new JacksonJsonpMapper());
+        return new ElasticsearchClient(restClientTransport);
+    }
+
+    private HttpHost[] getHttpHost() throws Exception {
+        if (!StringUtils.hasLength(hosts)) {
+            throw new Exception("hosts 配置缺失");
+        }
+        String[] hosts = this.hosts.split(";");
+        HttpHost[] httpHosts = new HttpHost[hosts.length];
+        for (int i = 0; i < hosts.length; i++) {
+            String[] strings = hosts[i].split(":");
+            HttpHost httpHost = new HttpHost(strings[0], Integer.parseInt(strings[1]), "https");
+            httpHosts[i] = httpHost;
+        }
+        return httpHosts;
+    }
+
+    private SSLContext buildSSLContext() throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+        ClassPathResource resource = new ClassPathResource(crt);
+        CertificateFactory factory = CertificateFactory.getInstance("X.509");
+        Certificate certificate;
+        try (InputStream is = resource.getInputStream()) {
+            certificate = factory.generateCertificate(is);
+        }
+        KeyStore trustStore = KeyStore.getInstance("pkcs12");
+        trustStore.load(null, null);
+        trustStore.setCertificateEntry("ca", certificate);
+        SSLContextBuilder sslContextBuilder = SSLContexts.custom()
+                .loadTrustMaterial(trustStore, null);
+        return sslContextBuilder.build();
+    }
+}
+```
+
+### 忽略证书
+
+```java
+@ConfigurationProperties(prefix = "elasticsearch")
+@Configuration
+public class ElasticsearchBean {
+    @Setter
+    private String hosts;
+
+    @Setter
+    private String username;
+
+    @Setter
+    private String password;
+
+    @Setter
+    private String crt;
+
+    @Bean
+    public ElasticsearchClient elasticsearchClient() throws Exception {
+        //  解析 HttpHost
+        HttpHost[] hosts = getHttpHost();
+
+        //  设置账号密码
+        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+
+        // 生成 SSLContext
+        SSLContext sslContext = buildSSLContext();
+
+        RestClient client = RestClient
+                .builder(hosts)
+                .setRequestConfigCallback(builder -> {
+                    builder.setConnectionRequestTimeout(5000);
+                    builder.setSocketTimeout(30000);
+                    return builder;
+                })
+                .setHttpClientConfigCallback(httpAsyncClientBuilder -> httpAsyncClientBuilder
+                        .setSSLContext(sslContext)
+                        .setSSLHostnameVerifier(new HostnameVerifier() {
+                            @Override
+                            public boolean verify(String s, SSLSession sslSession) {
+                                return true;
+                            }
+                        })
+                        .setDefaultCredentialsProvider(credentialsProvider))
+                .build();
+        RestClientTransport restClientTransport = new RestClientTransport(client, new JacksonJsonpMapper());
+        return new ElasticsearchClient(restClientTransport);
+    }
+
+    private HttpHost[] getHttpHost() throws Exception {
+        if (!StringUtils.hasLength(hosts)) {
+            throw new Exception("hosts 配置缺失");
+        }
+        String[] hosts = this.hosts.split(";");
+        HttpHost[] httpHosts = new HttpHost[hosts.length];
+        for (int i = 0; i < hosts.length; i++) {
+            String[] strings = hosts[i].split(":");
+            HttpHost httpHost = new HttpHost(strings[0], Integer.parseInt(strings[1]), "https");
+            httpHosts[i] = httpHost;
+        }
+        return httpHosts;
+    }
+
+    private SSLContext buildSSLContext() throws NoSuchAlgorithmException, KeyManagementException {
+        SSLContext sslContext = SSLContext.getInstance("SSL");
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    @Override
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+
+                    @Override
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                    }
+
+                    @Override
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                    }
                 }
-            }
-    };
-    sslContext.init(null, trustAllCerts, new SecureRandom());
-    RestClient client = RestClient
-            .builder(new HttpHost("127.0.0.1",9200, "https"))
-            .setRequestConfigCallback(builder -> {
-                builder.setConnectionRequestTimeout(5000);
-                builder.setSocketTimeout(30000);
-                return builder;
-            })
-            .setHttpClientConfigCallback(httpAsyncClientBuilder -> httpAsyncClientBuilder
-                    .setDefaultCredentialsProvider(credentialsProvider)
-                    .setSSLContext(sslContext)
-                    .setSSLHostnameVerifier(new HostnameVerifier() {
-                        @Override
-                        public boolean verify(String s, SSLSession sslSession) {
-                            return true;
-                        }
-                    }))
-            .build();
-    RestClientTransport restClientTransport = new RestClientTransport(client, new JacksonJsonpMapper());
-    return new ElasticsearchClient(restClientTransport);
+        };
+        sslContext.init(null, trustAllCerts, new SecureRandom());
+        return sslContext;
+    }
 }
 ```
 
