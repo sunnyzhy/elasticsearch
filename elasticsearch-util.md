@@ -1144,4 +1144,35 @@ void aggregate() throws IOException {
         }
     }
 }
+
+@Test
+void aggregateNest() throws IOException {
+    // boolQuery
+    BoolQuery.Builder queryBuilder = new BoolQuery.Builder();
+    queryBuilder.filter(elasticsearchUtil.termsQuery("name", Arrays.asList("tom"), String.class));
+
+    // aggregation
+    Map<String, Aggregation> aggregationMap = new HashMap<>();
+    aggregationMap.put("age", elasticsearchUtil.termsAggregation("age", null));
+    Map<String, Aggregation> aggregationMap1 = new HashMap<>();
+    Aggregation aggregation1 = elasticsearchUtil.termsAggregation("id", null, aggregationMap);
+    aggregationMap1.put("id", aggregation1);
+
+    // condition
+    ElasticsearchCondition condition = new ElasticsearchCondition();
+    condition.setFrom(0);
+    condition.setSize(0);
+
+    // search
+    Map<String, Aggregate> response = elasticsearchUtil.search(queryBuilder.build(), aggregationMap, condition, Arrays.asList("student"), Student.class);
+
+    // response
+    for (Map.Entry<String, Aggregate> entry : response.entrySet()) {
+        for (LongTermsBucket bucket : ((LongTermsAggregate) entry.getValue()._get()).buckets().array()) {
+            long id = bucket.key();
+            long count = bucket.docCount();
+            System.out.println(id + ":" + count);
+        }
+    }
+}
 ```
