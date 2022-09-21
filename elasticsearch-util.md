@@ -68,7 +68,11 @@ elasticsearch:
 注: 
 
 1. ```http_ca.crt``` 复制的是 ```elasticsearch``` 服务器里的 ```config/certs/http_ca.crt```
-2. ```http_ca.crt``` 证书在 ```resources``` 目录下，与 ```application.yml``` 同级
+2. 应用启动时，先加载当前目录下的 ```http_ca.crt```，如果不存在，就加载 ```resources``` 目录下的 ```http_ca.crt```
+   - 当前目录下的 ```http_ca.crt``` 证书: 
+      - 调试环境下，在项目的根目录，与 ```pom.xml``` 同级
+      - 非调试环境下，与生成的 ```jar``` 同级
+   - ```resources``` 目录下的 ```http_ca.crt``` 证书与 ```application.yml``` 同级
 
 ## ElasticsearchClient
 
@@ -142,12 +146,16 @@ public class ElasticsearchBean {
     }
 
     private SSLContext buildSSLContext() throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
-        ClassPathResource resource = new ClassPathResource(crt);
-        CertificateFactory factory = CertificateFactory.getInstance("X.509");
-        Certificate certificate;
-        try (InputStream is = resource.getInputStream()) {
-            certificate = factory.generateCertificate(is);
+        InputStream inputStream = null;
+        File file = new File(crt);
+        if (file.exists()) {
+            inputStream = new FileInputStream(crt);
+        } else {
+            inputStream = new ClassPathResource(crt).getInputStream();
         }
+        CertificateFactory factory = CertificateFactory.getInstance("X.509");
+        Certificate certificate = factory.generateCertificate(inputStream);
+        inputStream.close();
         KeyStore trustStore = KeyStore.getInstance("pkcs12");
         trustStore.load(null, null);
         trustStore.setCertificateEntry("ca", certificate);
