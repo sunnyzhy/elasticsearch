@@ -65,8 +65,22 @@ Health status of the cluster, based on the state of its primary and replica shar
 
 ### 2. 重置 Elasticsearch 的用户密码
 
+#### 2.1. 重置为随机密码
+
 ```bash
 # ./bin/elasticsearch-reset-password -u <username>
+```
+
+#### 2.2. 重置为指定密码
+
+```bash
+# ./bin/elasticsearch-reset-password -u <username> -i
+```
+
+#### 2.3. 重置远程的用户密码
+
+```bash
+# ./bin/elasticsearch-reset-password --url "http://<remote_ip>:9200" -u <username> -i
 ```
 
 ### 3. 修改 Elasticsearch 的认证密码
