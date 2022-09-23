@@ -257,13 +257,13 @@ public ElasticsearchClient elasticsearchClient() throws IOException, Certificate
 ###### 3.1.1.1 导出索引的 mapping 结构
 
 ```bash
-# elasticdump --input=http://elastic:your_password@localhost:9200/index_name --output=/usr/local/elastic/mapping.json --type=mapping
+# elasticdump --input=http://<username>:<password>@localhost:9200/index_name --output=/usr/local/elastic/mapping.json --type=mapping
 ```
 
 ###### 3.1.1.2 导出索引
 
 ```bash
-# elasticdump --input=http://elastic:your_password@localhost:9200/index_name --output=/usr/local/elastic/data.json --type=data
+# elasticdump --input=http://<username>:<password>@localhost:9200/index_name --output=/usr/local/elastic/data.json --type=data
 ```
 
 ##### 3.1.2 向目标 ES 里导入索引
@@ -271,13 +271,13 @@ public ElasticsearchClient elasticsearchClient() throws IOException, Certificate
 ###### 3.1.2.1 导入索引的 mapping 结构
 
 ```bash
-# elasticdump --input=/usr/local/elastic/mapping.json --output=http://elastic:your_password@localhost:9200/index_name --type=mapping
+# elasticdump --input=/usr/local/elastic/mapping.json --output=http://<username>:<password>@localhost:9200/index_name --type=mapping
 ```
 
 ###### 3.1.2.2 导入索引
 
 ```bash
-# elasticdump --input=/usr/local/elastic/data.json --output=http://elastic:your_password@localhost:9200/index_name --type=data
+# elasticdump --input=/usr/local/elastic/data.json --output=http://<username>:<password>@localhost:9200/index_name --type=data
 ```
 
 #### 3.2 迁移所有索引（模板）
@@ -287,20 +287,20 @@ public ElasticsearchClient elasticsearchClient() throws IOException, Certificate
 ###### 3.2.1.1 导出索引的 template 结构
 
 ```bash
-# elasticdump --input=http://elastic:your_password@localhost:9200/template_* --output=/home/saftop/elastic/template.json --type=template --all=true
+# elasticdump --input=http://<username>:<password>@localhost:9200/template_* --output=/home/saftop/elastic/template.json --type=template --all=true
 ```
 
 ###### 3.2.1.2 导出索引
 
 ```bash
-# elasticdump --input=http://elastic:your_password@localhost:9200/index_name_prefix_* --output=/usr/local/elastic/data.json --type=data --all=true
+# elasticdump --input=http://<username>:<password>@localhost:9200/index_name_prefix_* --output=/usr/local/elastic/data.json --type=data --all=true
 ```
 
 **如果报错 "no matches found"，就在通配符前加转义符 "\\"**
 
 ```bash
-# elasticdump --input=http://elastic:your_password@localhost:9200/template_\* --output=/home/saftop/elastic/template.json --type=template --all=true
-# elasticdump --input=http://elastic:your_password@localhost:9200/index_name_prefix_\* --output=/usr/local/elastic/data.json --type=data --all=true
+# elasticdump --input=http://<username>:<password>@localhost:9200/template_\* --output=/home/saftop/elastic/template.json --type=template --all=true
+# elasticdump --input=http://<username>:<password>@localhost:9200/index_name_prefix_\* --output=/usr/local/elastic/data.json --type=data --all=true
 ```
 
 ##### 3.2.2 向目标 ES 里导入索引
@@ -308,13 +308,13 @@ public ElasticsearchClient elasticsearchClient() throws IOException, Certificate
 ###### 3.2.2.1 导入索引的 template 结构
 
 ```bash
-# elasticdump --input=/home/saftop/elastic/template.json --output=http://elastic:your_password@localhost:9200 --type=template --all=true
+# elasticdump --input=/home/saftop/elastic/template.json --output=http://<username>:<password>@localhost:9200 --type=template --all=true
 ```
 
 ###### 3.2.2.2 导入索引
 
 ```bash
-# elasticdump --input=/usr/local/elastic/data.json --output=http://elastic:your_password@localhost:9200 --type=data --all=true
+# elasticdump --input=/usr/local/elastic/data.json --output=http://<username>:<password>@localhost:9200 --type=data --all=true
 ```
 
 #### 3.3 迁移所有索引
@@ -324,13 +324,13 @@ public ElasticsearchClient elasticsearchClient() throws IOException, Certificate
 ###### 3.3.1.1 导出索引的 mapping 结构
 
 ```bash
-# elasticdump --input=http://elastic:your_password@localhost:9200 --output=/usr/local/elastic/mapping.json --type=mapping --all=true
+# elasticdump --input=http://<username>:<password>@localhost:9200 --output=/usr/local/elastic/mapping.json --type=mapping --all=true
 ```
 
 ###### 3.3.1.2 导出索引
 
 ```bash
-# elasticdump --input=http://elastic:your_password@localhost:9200 --output=/usr/local/elastic/data.json --type=data --all=true
+# elasticdump --input=http://<username>:<password>@localhost:9200 --output=/usr/local/elastic/data.json --type=data --all=true
 ```
 
 ##### 3.3.2 向目标 ES 里导入索引
@@ -338,22 +338,27 @@ public ElasticsearchClient elasticsearchClient() throws IOException, Certificate
 ###### 3.3.2.1 导入索引的 mapping 结构
 
 ```bash
-# elasticdump --input=/usr/local/elastic/mapping.json --output=http://elastic:your_password@localhost:9200 --type=mapping --all=true
+# elasticdump --input=/usr/local/elastic/mapping.json --output=http://<username>:<password>@localhost:9200 --type=mapping --all=true
 ```
 
 ###### 3.3.2.2 导入索引
 
 ```bash
-# elasticdump --input=/usr/local/elastic/data.json --output=http://elastic:your_password@localhost:9200 --type=data --all=true
+# elasticdump --input=/usr/local/elastic/data.json --output=http://<username>:<password>@localhost:9200 --type=data --all=true
 ```
 
 #### 3.4 其它
 
 - elasticdump 访问 Elasticsearch 时需要账号认证，在 http 后面添加 **username:password@**
    ```bash
-   # elasticdump --input=http://elastic:your_password@localhost:9200/index_name --output=/usr/local/elastic/data.json --type=data
+   # elasticdump --input=http://<username>:<password>@localhost:9200/index_name --output=/usr/local/elastic/data.json --type=data
    ```
-   
+
+- elasticdump 访问 https
+   ```bash
+   # NODE_TLS_REJECT_UNAUTHORIZED=0 elasticdump --input=/usr/local/elastic/data.json --output=https://<username>:<password>@localhost:9200 --type=data --all=true --limit 500
+   ```
+
 - 本地迁移
    ```bash
    # elasticdump --input=http://localhost:9200/index_name --output=/usr/local/elastic/data.json --type=data
