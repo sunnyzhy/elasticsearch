@@ -21,38 +21,111 @@ cluster.initial_master_nodes: ["node-1", "node-2", "node-3"]
 
 ## 配置集群间的证书
 
-***在集群的任意一台服务器执行以下命令(不用输入任何内容，一路回车即可):***
+***在集群的任意一台服务器执行以下命令（[Enter]为按回车键）:***
 
 ```bash
 # ./elasticsearch-certutil ca
+Please enter the desired output file [elastic-stack-ca.p12]: [Enter]
+Enter password for elastic-stack-ca.p12 : [Enter]
 
 # ./elasticsearch-certutil cert --ca elastic-stack-ca.p12
+Enter password for CA (elastic-stack-ca.p12) : [Enter]
+Please enter the desired output file [elastic-certificates.p12]: [Enter]
+Enter password for elastic-certificates.p12 : [Enter]
 ...
 Certificates written to /usr/local/elasticsearch-8.4.1/elastic-certificates.p12
 ...
-```
 
-***注意返回内容里的证书位置，本示例中生成的证书位置在 ```/usr/local/elasticsearch-8.4.1/elastic-certificates.p12```***
+# mkdir -p /usr/local/elasticsearch-8.4.1/config/certs
 
-***把生成的证书复制到 ```/usr/local/elasticsearch-8.4.1/config/certs``` 目录下:***
-
-```bash
-# mv /usr/local/elasticsearch-8.4.1/*.p12 /usr/local/elasticsearch-8.4.1/config/certs
+# mv /usr/local/elasticsearch-8.4.1/elastic-stack-ca.p12 /usr/local/elasticsearch-8.4.1/elastic-certificates.p12 /usr/local/elasticsearch-8.4.1/config/certs
 
 # ls /usr/local/elasticsearch-8.4.1/config/certs
 elastic-certificates.p12  elastic-stack-ca.p12
+
+# ./elasticsearch-certutil http
+...
+Generate a CSR? [y/N]n
+...
+Use an existing CA? [y/N]y
+...
+CA Path: /usr/local/elasticsearch-8.4.1/config/certs/elastic-stack-ca.p12
+...
+Password for elastic-stack-ca.p12: [Enter]
+...
+For how long should your certificate be valid? [5y] 5y
+...
+Generate a certificate per node? [y/N]n
+...
+Enter all the hostnames that you need, one per line.
+When you are done, press <ENTER> once more to move on to the next step.
+
+192.168.0.1
+192.168.0.2
+192.168.0.3
+
+You entered the following hostnames.
+
+ - 192.168.0.1
+ - 192.168.0.2
+ - 192.168.0.3
+
+Is this correct [Y/n]y
+...
+Enter all the IP addresses that you need, one per line.
+When you are done, press <ENTER> once more to move on to the next step.
+
+192.168.0.1
+192.168.0.2
+192.168.0.3
+
+You entered the following IP addresses.
+
+ - 192.168.0.1
+ - 192.168.0.2
+ - 192.168.0.3
+
+Is this correct [Y/n]y
+...
+Do you wish to change any of these options? [y/N]n
+...
+Provide a password for the "http.p12" file:  [<ENTER> for none] [Enter]
+...
+What filename should be used for the output zip file? [/usr/local/elasticsearch-8.4.1/elasticsearch-ssl-http.zip] [Enter]
+
+Zip file written to /usr/local/elasticsearch-8.4.1/elasticsearch-ssl-http.zip
+
+# cd /usr/local/elasticsearch-8.4.1
+
+# unzip elasticsearch-ssl-http.zip 
+Archive:  elasticsearch-ssl-http.zip
+   creating: elasticsearch/
+  inflating: elasticsearch/README.txt  
+  inflating: elasticsearch/http.p12  
+  inflating: elasticsearch/sample-elasticsearch.yml  
+   creating: kibana/
+  inflating: kibana/README.txt       
+  inflating: kibana/elasticsearch-ca.pem  
+  inflating: kibana/sample-kibana.yml 
+  
+# cp ./elasticsearch/http.p12 ./kibana/elasticsearch-ca.pem ./config/certs/
+
+# ls /usr/local/elasticsearch-8.4.1/config/certs
+elastic-certificates.p12  elasticsearch-ca.pem  elastic-stack-ca.p12  http.p12
 ```
+
+***注意返回内容里的证书位置，本示例中生成的证书位置在 ```/usr/local/elasticsearch-8.4.1/``` 的目录下。***
 
 ***在 ```elasticsearch.yml``` 文件中配置证书:***
 
 ```bash
-# vim /usr/local/elasticsearch-8.4.1/config/ elasticsearch.yml
+# vim /usr/local/elasticsearch-8.4.1/config/elasticsearch.yml
 ```
 
 ```yml
 xpack.security.http.ssl:
   enabled: true
-  keystore.path: certs/elastic-stack-ca.p12
+  keystore.path: certs/http.p12
 
 xpack.security.transport.ssl:
   enabled: true
