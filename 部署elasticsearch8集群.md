@@ -137,3 +137,7 @@ xpack.security.transport.ssl:
 ## 分发 elasticsearch
 
 ***把配置好的 elasticsearch 完整的目录复制到集群内的其他服务器上。***
+
+## 启动集群
+
+***启动各节点下的 elasticsearch 服务。***
