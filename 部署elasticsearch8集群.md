@@ -7,7 +7,7 @@
 ## 配置集群节点
 
 ```bash
-# vim /usr/local/elasticsearch-8.4.1/config/ elasticsearch.yml
+# vim /usr/local/elasticsearch-8.4.1/config/elasticsearch.yml
 ```
 
 ```yml
