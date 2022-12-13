@@ -24,21 +24,12 @@ cluster.initial_master_nodes: ["node-1", "node-2", "node-3"]
 ***在集群的任意一台服务器执行以下命令（[Enter]为按回车键）:***
 
 ```bash
-# ./elasticsearch-certutil ca
-Please enter the desired output file [elastic-stack-ca.p12]: [Enter]
+# ./elasticsearch-certutil ca --out config/certs/elastic-stack-ca.p12
 Enter password for elastic-stack-ca.p12 : [Enter]
 
-# ./elasticsearch-certutil cert --ca elastic-stack-ca.p12
+# ./elasticsearch-certutil cert --ca elastic-stack-ca.p12 --dns elastic.svc.cluster --out config/certs/elastic-certificates.p12
 Enter password for CA (elastic-stack-ca.p12) : [Enter]
-Please enter the desired output file [elastic-certificates.p12]: [Enter]
 Enter password for elastic-certificates.p12 : [Enter]
-...
-Certificates written to /usr/local/elasticsearch-8.4.1/elastic-certificates.p12
-...
-
-# mkdir -p /usr/local/elasticsearch-8.4.1/config/certs
-
-# mv /usr/local/elasticsearch-8.4.1/elastic-stack-ca.p12 /usr/local/elasticsearch-8.4.1/elastic-certificates.p12 /usr/local/elasticsearch-8.4.1/config/certs
 
 # ls /usr/local/elasticsearch-8.4.1/config/certs
 elastic-certificates.p12  elastic-stack-ca.p12
@@ -113,8 +104,6 @@ Archive:  elasticsearch-ssl-http.zip
 # ls /usr/local/elasticsearch-8.4.1/config/certs
 elastic-certificates.p12  elasticsearch-ca.pem  elastic-stack-ca.p12  http.p12
 ```
-
-***注意返回内容里的证书位置，本示例中生成的证书位置在 ```/usr/local/elasticsearch-8.4.1/``` 的目录下。***
 
 ***在 ```elasticsearch.yml``` 文件中配置证书:***
 
