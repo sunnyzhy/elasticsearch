@@ -27,7 +27,7 @@ cluster.initial_master_nodes: ["node-1", "node-2", "node-3"]
 # ./elasticsearch-certutil ca --out config/certs/elastic-stack-ca.p12
 Enter password for elastic-stack-ca.p12 : [Enter]
 
-# ./elasticsearch-certutil cert --ca elastic-stack-ca.p12 --dns elastic.svc.cluster --out config/certs/elastic-certificates.p12
+# ./elasticsearch-certutil cert --ca config/certs/elastic-stack-ca.p12 --dns elastic.svc.cluster --out config/certs/elastic-certificates.p12
 Enter password for CA (elastic-stack-ca.p12) : [Enter]
 Enter password for elastic-certificates.p12 : [Enter]
 
