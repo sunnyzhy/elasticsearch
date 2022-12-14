@@ -130,3 +130,50 @@ cluster.initial_master_nodes: ["node-1", "node-2", "node-3"]
 
 # su - elastic -c '/usr/local/elasticsearch-8.4.1/bin/elasticsearch -d'
 ```
+
+## 重置集群密码
+
+***在集群里任意节点下执行以下命令:***
+
+```bash
+# /home/saftop/elasticsearch-8.4.1/bin/elasticsearch-reset-password -i -u elastic
+This tool will reset the password of the [elastic] user.
+You will be prompted to enter the password.
+Please confirm that you would like to continue [y/N]y
+
+
+Enter password for [elastic]: [elastic]
+Re-enter password for [elastic]: [elastic]
+Password for the [elastic] user successfully reset.
+```
+
+***密码设置为 ```elastic```***
+
+## 查看集群状态
+
+```bash
+# curl -k -u elastic:elastic https://localhost:9200/_cat/nodes?v
+ip           heap.percent ram.percent cpu load_1m load_5m load_15m node.role   master name
+192.168.0.1             1          62   0    0.00    0.01     0.05 cdfhilmrstw *      node-1
+192.168.0.3             4          63   0    0.01    0.03     0.07 cdfhilmrstw -      node-3
+192.168.0.2             4          60   0    0.85    0.62     0.34 cdfhilmrstw -      node-2
+
+# curl -k -u elastic:elastic https://localhost:9200/_cluster/health?pretty
+{
+  "cluster_name" : "elastic-cluster",
+  "status" : "green",
+  "timed_out" : false,
+  "number_of_nodes" : 3,
+  "number_of_data_nodes" : 3,
+  "active_primary_shards" : 1,
+  "active_shards" : 2,
+  "relocating_shards" : 0,
+  "initializing_shards" : 0,
+  "unassigned_shards" : 0,
+  "delayed_unassigned_shards" : 0,
+  "number_of_pending_tasks" : 0,
+  "number_of_in_flight_fetch" : 0,
+  "task_max_waiting_in_queue_millis" : 0,
+  "active_shards_percent_as_number" : 100.0
+}
+```
