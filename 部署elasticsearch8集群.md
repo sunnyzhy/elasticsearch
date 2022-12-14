@@ -46,6 +46,18 @@ useradd elastic -g elastic -p elastic
 # kill -9 <pid>
 ```
 
+##### 修改 node-1 的配置文件
+
+```bash
+# vim /usr/local/elasticsearch-8.4.1/config/elasticsearch.yml
+```
+
+***注释或删掉 ```BEGIN SECURITY AUTO CONFIGURATION``` 和 ```END SECURITY AUTO CONFIGURATION``` 之间的 ```cluster.initial_master_nodes```:***
+
+```yml
+#cluster.initial_master_nodes: ["localhost.localdomain"]
+```
+
 ### 创建自签名证书
 
 [创建自签名证书](./创建自签名证书.md '创建自签名证书')
@@ -81,8 +93,6 @@ network.host: 0.0.0.0
 http.port: 9200
 discovery.seed_hosts: ["192.168.1.2", "192.168.1.3", "192.168.1.4"]
 cluster.initial_master_nodes: ["node-1", "node-2", "node-3"]
-
-#cluster.initial_master_nodes: ["localhost.localdomain"]
 ```
 
 ## 分发 elasticsearch
@@ -104,8 +114,6 @@ network.host: 0.0.0.0
 http.port: 9200
 discovery.seed_hosts: ["192.168.1.2", "192.168.1.3", "192.168.1.4"]
 cluster.initial_master_nodes: ["node-1", "node-2", "node-3"]
-
-#cluster.initial_master_nodes: ["localhost.localdomain"]
 ```
 
 ### node-3
@@ -121,8 +129,6 @@ network.host: 0.0.0.0
 http.port: 9200
 discovery.seed_hosts: ["192.168.1.2", "192.168.1.3", "192.168.1.4"]
 cluster.initial_master_nodes: ["node-1", "node-2", "node-3"]
-
-#cluster.initial_master_nodes: ["localhost.localdomain"]
 ```
 
 ## 启动集群
