@@ -1,10 +1,52 @@
 # 部署 elasticsearch8 集群
 
-## 安装 elasticsearch8
+## 前言
+
+### 准备三台物理机
+
+|物理机IP|node.name|
+|--|--|
+|192.168.0.1|node-1|
+|192.168.0.2|node-2|
+|192.168.0.3|node-3|
+
+### 创建 elasticsearch 账号
+
+```bash
+userdel elastic
+groupadd elastic
+useradd elastic -g elastic -p elastic
+```
+
+### 安装 elasticsearch8
 
 [安装elasticsearch8](./安装elasticsearch8.md '安装elasticsearch8')
 
-## 配置集群节点
+## 创建证书
+
+### 自动创建证书
+
+#### 启动 node-1
+
+##### 启动 node-1
+
+```bash
+# chown -R elastic:elastic /usr/local/elasticsearch-8.4.1
+
+# su - elastic -c '/usr/local/elasticsearch-8.4.1/bin/elasticsearch -d'
+```
+
+***启动 ```node-1``` 之后，会在 ```/usr/local/elasticsearch-8.4.1/config/certs/``` 目录下自动创建证书。***
+
+##### 停止 node-1
+
+```bash
+# ps -ef | grep elastic
+
+# kill -9 <pid>
+```
+
+##### 修改配置文件
 
 ```bash
 # vim /usr/local/elasticsearch-8.4.1/config/elasticsearch.yml
@@ -17,116 +59,70 @@ network.host: 0.0.0.0
 http.port: 9200
 discovery.seed_hosts: ["192.168.1.2", "192.168.1.3", "192.168.1.4"]
 cluster.initial_master_nodes: ["node-1", "node-2", "node-3"]
+
+#cluster.initial_master_nodes: ["localhost.localdomain"]
 ```
 
-## 配置集群间的证书
+## 分发 elasticsearch
 
-***在集群的任意一台服务器执行以下命令（[Enter]为按回车键）:***
+***把 node-1 完整的 elasticsearch 目录复制到集群内的其他服务器上。***
 
-```bash
-# ./elasticsearch-certutil ca --out config/certs/elastic-stack-ca.p12
-Enter password for elastic-stack-ca.p12 : [Enter]
+## 修改其他集群节点的配置
 
-# ./elasticsearch-certutil cert --ca config/certs/elastic-stack-ca.p12 --out config/certs/elastic-certificates.p12
-Enter password for CA (elastic-stack-ca.p12) : [Enter]
-Enter password for elastic-certificates.p12 : [Enter]
-
-# ls /usr/local/elasticsearch-8.4.1/config/certs
-elastic-certificates.p12  elastic-stack-ca.p12
-
-# ./elasticsearch-certutil http
-...
-Generate a CSR? [y/N]n
-...
-Use an existing CA? [y/N]y
-...
-CA Path: /usr/local/elasticsearch-8.4.1/config/certs/elastic-stack-ca.p12
-...
-Password for elastic-stack-ca.p12: [Enter]
-...
-For how long should your certificate be valid? [5y] 5y
-...
-Generate a certificate per node? [y/N]n
-...
-Enter all the hostnames that you need, one per line.
-When you are done, press <ENTER> once more to move on to the next step.
-
-192.168.0.1
-192.168.0.2
-192.168.0.3
-
-You entered the following hostnames.
-
- - 192.168.0.1
- - 192.168.0.2
- - 192.168.0.3
-
-Is this correct [Y/n]y
-...
-Enter all the IP addresses that you need, one per line.
-When you are done, press <ENTER> once more to move on to the next step.
-
-192.168.0.1
-192.168.0.2
-192.168.0.3
-
-You entered the following IP addresses.
-
- - 192.168.0.1
- - 192.168.0.2
- - 192.168.0.3
-
-Is this correct [Y/n]y
-...
-Do you wish to change any of these options? [y/N]n
-...
-Provide a password for the "http.p12" file:  [<ENTER> for none] [Enter]
-...
-What filename should be used for the output zip file? [/usr/local/elasticsearch-8.4.1/elasticsearch-ssl-http.zip] [Enter]
-
-Zip file written to /usr/local/elasticsearch-8.4.1/elasticsearch-ssl-http.zip
-
-# cd /usr/local/elasticsearch-8.4.1
-
-# unzip elasticsearch-ssl-http.zip 
-Archive:  elasticsearch-ssl-http.zip
-   creating: elasticsearch/
-  inflating: elasticsearch/README.txt  
-  inflating: elasticsearch/http.p12  
-  inflating: elasticsearch/sample-elasticsearch.yml  
-   creating: kibana/
-  inflating: kibana/README.txt       
-  inflating: kibana/elasticsearch-ca.pem  
-  inflating: kibana/sample-kibana.yml 
-  
-# cp ./elasticsearch/http.p12 ./kibana/elasticsearch-ca.pem ./config/certs/
-
-# ls /usr/local/elasticsearch-8.4.1/config/certs
-elastic-certificates.p12  elasticsearch-ca.pem  elastic-stack-ca.p12  http.p12
-```
-
-***在 ```elasticsearch.yml``` 文件中配置证书:***
+### node-2
 
 ```bash
 # vim /usr/local/elasticsearch-8.4.1/config/elasticsearch.yml
 ```
 
 ```yml
-xpack.security.http.ssl:
-  enabled: true
-  keystore.path: certs/http.p12
+cluster.name: elastic-cluster
+node.name: node-2
+network.host: 0.0.0.0
+http.port: 9200
+discovery.seed_hosts: ["192.168.1.2", "192.168.1.3", "192.168.1.4"]
+cluster.initial_master_nodes: ["node-1", "node-2", "node-3"]
 
-xpack.security.transport.ssl:
-  enabled: true
-  verification_mode: certificate
-  keystore.path: certs/elastic-certificates.p12
-  truststore.path: certs/elastic-certificates.p12
+#cluster.initial_master_nodes: ["localhost.localdomain"]
 ```
 
-## 分发 elasticsearch
+### node-3
 
-***把配置好的 elasticsearch 完整的目录复制到集群内的其他服务器上。***
+```bash
+# vim /usr/local/elasticsearch-8.4.1/config/elasticsearch.yml
+```
+
+```yml
+cluster.name: elastic-cluster
+node.name: node-3
+network.host: 0.0.0.0
+http.port: 9200
+discovery.seed_hosts: ["192.168.1.2", "192.168.1.3", "192.168.1.4"]
+cluster.initial_master_nodes: ["node-1", "node-2", "node-3"]
+
+#cluster.initial_master_nodes: ["localhost.localdomain"]
+```
 
 ## 启动集群
 
-***启动各节点下的 elasticsearch 服务。***
+### 启动 node-1
+
+```bash
+# su - elastic -c '/usr/local/elasticsearch-8.4.1/bin/elasticsearch -d'
+```
+
+### 启动 node-2
+
+```bash
+# chown -R elastic:elastic /usr/local/elasticsearch-8.4.1
+
+# su - elastic -c '/usr/local/elasticsearch-8.4.1/bin/elasticsearch -d'
+```
+
+### 启动 node-3
+
+```bash
+# chown -R elastic:elastic /usr/local/elasticsearch-8.4.1
+
+# su - elastic -c '/usr/local/elasticsearch-8.4.1/bin/elasticsearch -d'
+```
