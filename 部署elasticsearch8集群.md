@@ -46,7 +46,11 @@ useradd elastic -g elastic -p elastic
 # kill -9 <pid>
 ```
 
-##### 修改配置文件
+### 创建自签名证书
+
+[创建自签名证书](./创建自签名证书.md '创建自签名证书')
+
+## 修改 node-1 的配置文件
 
 ```bash
 # vim /usr/local/elasticsearch-8.4.1/config/elasticsearch.yml
