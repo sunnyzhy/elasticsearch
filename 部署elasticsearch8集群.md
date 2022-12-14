@@ -151,6 +151,8 @@ Password for the [elastic] user successfully reset.
 
 ## 查看集群状态
 
+***在集群里任意节点下执行以下命令:***
+
 ```bash
 # curl -k -u elastic:elastic https://localhost:9200/_cat/nodes?v
 ip           heap.percent ram.percent cpu load_1m load_5m load_15m node.role   master name
