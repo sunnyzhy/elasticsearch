@@ -50,6 +50,20 @@ useradd elastic -g elastic -p elastic
 
 [创建自签名证书](./创建自签名证书.md '创建自签名证书')
 
+### 查看证书密码
+
+查看 ```http.p12``` 的密码:
+
+```bash
+# /usr/local/elasticsearch-8.4.1/bin/elasticsearch-keystore show xpack.security.http.ssl.keystore.secure_password
+```
+
+查看 ```transport.p12``` 的密码:
+
+```bash
+# /usr/local/elasticsearch-8.4.1/bin/elasticsearch-keystore show xpack.security.transport.ssl.keystore.secure_password
+```
+
 ## 修改 node-1 的配置文件
 
 ```bash
@@ -136,7 +150,7 @@ cluster.initial_master_nodes: ["node-1", "node-2", "node-3"]
 ***在集群里任意节点下执行以下命令:***
 
 ```bash
-# /home/saftop/elasticsearch-8.4.1/bin/elasticsearch-reset-password -i -u elastic
+# /usr/local/elasticsearch-8.4.1/bin/elasticsearch-reset-password -i -u elastic
 This tool will reset the password of the [elastic] user.
 You will be prompted to enter the password.
 Please confirm that you would like to continue [y/N]y
