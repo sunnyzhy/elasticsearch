@@ -64,6 +64,8 @@ useradd elastic -g elastic -p elastic
 
 ### 查看证书密码
 
+***证书的密码保存在 ```config/elasticsearch.keystore```***
+
 查看 ```http.p12``` 的密码:
 
 ```bash
