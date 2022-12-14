@@ -56,12 +56,16 @@ useradd elastic -g elastic -p elastic
 
 ```bash
 # ./elasticsearch-keystore show xpack.security.http.ssl.keystore.secure_password
+
+# ./elasticsearch-keystore show xpack.security.http.ssl.truststore.secure_password
 ```
 
 查看 ```transport.p12``` 的密码:
 
 ```bash
 # ./elasticsearch-keystore show xpack.security.transport.ssl.keystore.secure_password
+
+# ./elasticsearch-keystore show xpack.security.transport.ssl.truststore.secure_password
 ```
 
 ## 修改 node-1 的配置文件
