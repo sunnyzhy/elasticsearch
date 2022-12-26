@@ -66,6 +66,14 @@ useradd elastic -g elastic -p elastic
 
 ***证书的密码保存在 ```config/elasticsearch.keystore```***
 
+```bash
+# ./elasticsearch-keystore list
+keystore.seed
+xpack.security.http.ssl.keystore.secure_password
+xpack.security.transport.ssl.keystore.secure_password
+xpack.security.transport.ssl.truststore.secure_password
+```
+
 查看 ```http.p12``` 的密码:
 
 ```bash
