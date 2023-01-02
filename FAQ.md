@@ -355,3 +355,49 @@ Elasticsearch 中的数据组织成索引。每一个索引由一个或多个分
 ```bash
 curl -u elastic:password -H "Content-type: application/json" -X PUT http://localhost:9200/_all/_settings -d '{ "index.blocks.read_only_allow_delete": null }'
 ```
+
+## 15 Not enough space
+
+### 解决方法
+
+修改 ES 的 JVM 内存大小
+
+```bash
+# vim ./config/jvm.options
+-Xms2g
+-Xmx2g
+```
+
+## 16 jar hell
+
+报错如下:
+
+```
+fatal exception while booting Elasticsearchjava.lang.IllegalStateException: jar hell!
+class: sun.applet.AppletSecurity
+jar1: /usr/java/jdk1.8.0_151/jre/lib/rt.jar
+jar2: /usr/java/jdk1.8.0_151/lib/tools.jar
+	at org.elasticsearch.base@8.4.1/org.elasticsearch.jdk.JarHell.checkClass(JarHell.java:315)
+	at org.elasticsearch.base@8.4.1/org.elasticsearch.jdk.JarHell.checkJarHell(JarHell.java:233)
+	at org.elasticsearch.base@8.4.1/org.elasticsearch.jdk.JarHell.checkJarHell(JarHell.java:84)
+	at org.elasticsearch.server@8.4.1/org.elasticsearch.bootstrap.Elasticsearch.initPhase2(Elasticsearch.java:180)
+	at org.elasticsearch.server@8.4.1/org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:66)
+```
+
+如果是 ```jdk1.8```，并且在 ```/etc/profile ```文件中配置如下：
+
+```
+export JAVA_HOME=/usr/local/jdk1.8.0_333
+export JRE_HOME=/$JAVA_HOME/jre
+export CLASSPATH=.:$JAVA_HOME/jre/lib/rt.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+export PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin
+```
+
+只需要将 ```CLASSPATH ``` 修改为 ```export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib:$CLASSPATH```:
+
+```
+export JAVA_HOME=/usr/local/jdk1.8.0_333
+export JRE_HOME=/$JAVA_HOME/jre
+export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib:$CLASSPATH
+export PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin
+```
