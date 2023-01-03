@@ -384,7 +384,7 @@ jar2: /usr/java/jdk1.8.0_151/lib/tools.jar
 	at org.elasticsearch.server@8.4.1/org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:66)
 ```
 
-如果是 ```jdk1.8```，并且在 ```/etc/profile ```文件中配置如下：
+如果是 ```jdk1.8```，并且在 ```/etc/profile``` 文件中配置如下：
 
 ```
 export JAVA_HOME=/usr/local/jdk1.8.0_333
@@ -396,8 +396,11 @@ export PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin
 只需要将 ```CLASSPATH ``` 修改为 ```export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib:$CLASSPATH```:
 
 ```
+# vim /etc/profile
 export JAVA_HOME=/usr/local/jdk1.8.0_333
 export JRE_HOME=/$JAVA_HOME/jre
 export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib:$CLASSPATH
 export PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin
+
+# source /etc/profile
 ```
