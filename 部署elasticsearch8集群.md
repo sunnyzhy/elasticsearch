@@ -223,3 +223,13 @@ ip           heap.percent ram.percent cpu load_1m load_5m load_15m node.role   m
 
 # curl --cacert /usr/local/elasticsearch-8.4.1/config/certs/elasticsearch-ca.pem -u elastic:elastic https://192.168.0.1:9200/_cluster/health?pretty
 ```
+
+## FAQ
+
+### 节点加入集群失败
+
+删除所有节点的 ```data``` 目录:
+
+```bash
+rm -rf /usr/local/elasticsearch-8.4.1/config/data
+```
