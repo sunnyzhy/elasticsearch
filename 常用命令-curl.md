@@ -58,7 +58,7 @@ curl -k -u elastic:{password} https://localhost:9200/_cat/health?v
 ### 节点
 
 ```bash
-curl -k -u elastic:saftop9854 https://localhost:9200/_cat/nodes?v
+curl -k -u elastic:{password} https://localhost:9200/_cat/nodes?v
 ```
 
 ### 索引
@@ -106,7 +106,7 @@ curl -k -u elastic:{password} -H "Content-Type:application/json" -XPOST https://
 修改数据:
 
 ```bash
-curl -k -u elastic:{password} -H "Content-Type:application/json" -XPOST https://localhost:9200/{index}/_update/{id}?pretty -d'{"a": "a","b": "b"}'
+curl -k -u elastic:{password} -H "Content-Type:application/json" -XPOST https://localhost:9200/{index}/_update/{id}?pretty -d'{"doc":{"a": "a","b": "b"}}'
 ```
 
 删除索引:
