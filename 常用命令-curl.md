@@ -136,7 +136,7 @@ curl -k -u elastic:{password} -XDELETE https://localhost:9200/{index}/_doc/{id}?
 条件删除:
 
 ```bash
-curl -k -u elastic:{password} -H "Content-Type:application/json" -XPOST https://localhost:9200/{index}/_doc/_delete_by_query?pretty -d '{"query":{"match":{"name":"aa"}}}'
+curl -k -u elastic:{password} -H "Content-Type:application/json" -XPOST https://localhost:9200/{index}/_doc/_delete_by_query?pretty -d '{"query":{"match":{"name":"xx"}}}'
 ```
 
 查询指定 id 的数据:
