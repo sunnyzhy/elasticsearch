@@ -91,10 +91,28 @@ curl -k -u elastic:{password} https://localhost:9200/_index_template/{template}?
 
 ## 索引
 
-获取索引:
+创建索引:
 
 ```bash
-curl -k -u elastic:{password} https://localhost:9200/{index}/_doc/{id}?pretty
+curl -k -u elastic:{password} -XPUT https://localhost:9200/{index}?pretty
+```
+
+查看单个索引信息:
+
+```bash
+curl -k -u elastic:{password} -XGET https://localhost:9200/{index}?pretty
+```
+
+删除索引:
+
+```bash
+curl -k -u elastic:{password} -XDELETE https://localhost:9200/{index}?pretty
+```
+
+获取 mapping:
+
+```bash
+curl -k -u elastic:{password} https://localhost:9200/{index}/_mapping?pretty
 ```
 
 添加数据:
@@ -109,10 +127,70 @@ curl -k -u elastic:{password} -H "Content-Type:application/json" -XPOST https://
 curl -k -u elastic:{password} -H "Content-Type:application/json" -XPOST https://localhost:9200/{index}/_update/{id}?pretty -d'{"doc":{"a": "a","b": "b"}}'
 ```
 
-删除索引:
+删除数据:
 
 ```bash
 curl -k -u elastic:{password} -XDELETE https://localhost:9200/{index}/_doc/{id}?pretty
+```
+
+条件删除:
+
+```bash
+curl -k -u elastic:{password} -H "Content-Type:application/json" -XPOST https://localhost:9200/{index}/_doc/_delete_by_query?pretty -d '{"query":{"match":{"name":"aa"}}}'
+```
+
+查询指定 id 的数据:
+
+```bash
+curl -k -u elastic:{password} https://localhost:9200/{index}/_doc/{id}?pretty
+```
+
+查询指定所有库的所有数据:
+
+```bash
+curl -k -u elastic:{password} -XGET https://localhost:9200/{index}/_search?pretty
+```
+
+查询指定索引库的所有数据记录的name值:
+
+```bash
+curl -k -u elastic:{password} -XGET https://localhost:9200/{index}/_search?_source=name?pretty
+```
+
+查询指定 id 的数据记录的 name 值:
+
+```bash
+curl -k -u elastic:{password} -XGET https://localhost:9200/{index}/{id}?_source=name&pretty
+```
+
+查询所有数据:
+
+```bash
+curl -k -u elastic:{password} -H "Content-Type:application/json" -XGET https://localhost:9200/{index}/_search?pretty -d '{"query":{"match_all":{}}}'
+```
+
+指定条数:
+
+```bash
+curl -k -u elastic:{password} -H "Content-Type:application/json" -XGET https://localhost:9200/{index}/_search?pretty -d '{"query":{"match_all":{}},"size":2}'
+```
+
+分页查询:
+
+```bash
+curl -k -u elastic:{password} -H "Content-Type:application/json" -XGET https://localhost:9200/{index}/_search?pretty -d '{"query":{"match_all":{}},"from":0,"size":2}'
+```
+
+查询指定的列:
+
+```bash
+curl -k -u elastic:{password} -H "Content-Type:application/json" -XGET https://localhost:9200/{index}/_search?pretty -d '{"query":{"match_all":{}},"_source":["name","id"]}'
+```
+
+排序:
+
+```bash
+curl -k -u elastic:{password} -H "Content-Type:application/json" -XGET https://localhost:9200/{index}/_search?pretty -d '{"query":{"match_all":{}},"sort":{"price":{"order":"desc"}}}'
 ```
 
 模糊查询:
@@ -121,16 +199,32 @@ curl -k -u elastic:{password} -XDELETE https://localhost:9200/{index}/_doc/{id}?
 curl -k -u elastic:{password} -H "Content-Type:application/json" https://localhost:9200/{index}/_search?pretty -d '{"query":{"match":{"name":"xx"}}}'
 ```
 
+多条件模糊查询:
+
+- bool must: 必须满足的条件
+- must_not: 必须不能满足的条件
+- should: 应该，可有可无
+
+```bash
+curl -k -u elastic:{password} -H "Content-Type:application/json" -XGET https://localhost:9200/{index}/_search?pretty -d '{"query":{"bool":{"must":{"match":{"name":"xx"}}}}}'
+```
+
 精确查询:
 
 ```bash
 curl -k -u elastic:{password} -H "Content-Type:application/json" https://localhost:9200/{index}/_search?pretty -d '{"query":{"term":{"name":"xx"}}}'
 ```
 
-获取 mapping:
+精确匹配多个词:
 
 ```bash
-curl -k -u elastic:{password} https://localhost:9200/{index}/_mapping?pretty
+curl -k -u elastic:{password} -H "Content-Type:application/json" -XGET https://localhost:9200/{index}/_search?pretty -d '{"query":{"terms":{"name":["xx","yy"]}}}'
+```
+
+范围查询:
+
+```bash
+curl -k -u elastic:{password} -H "Content-Type:application/json" -XGET https://localhost:9200/{index}/_search?pretty -d '{"query":{"range":{"age":{"gt":"20","lte":"25"}}}}'
 ```
 
 ## ```_cluster```
