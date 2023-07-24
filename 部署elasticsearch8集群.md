@@ -105,6 +105,10 @@ discovery.seed_hosts: ["192.168.1.2", "192.168.1.3", "192.168.1.4"]
 cluster.initial_master_nodes: ["node-1", "node-2", "node-3"]
 ```
 
+注意：
+1. ```node.name``` 尽量不要跟主机名相同。
+2. 如果安装了 keepalived 并配置了 VIP，那么 ```network.host``` 就必须使用固定的主机IP，而不能使用 ```0.0.0.0```。
+
 ## 分发 elasticsearch
 
 ***把 node-1 完整的 elasticsearch 目录复制到集群内的其他服务器上。***
