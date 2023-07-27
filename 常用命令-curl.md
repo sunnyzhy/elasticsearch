@@ -61,26 +61,18 @@ curl -k -u elastic:{password} https://localhost:9200/_cat/health?v
 curl -k -u elastic:{password} https://localhost:9200/_cat/nodes?v
 ```
 
-### 索引
-
-查看全部索引:
-
-```bash
-curl -k -u elastic:{password} https://localhost:9200/_cat/indices?v
-```
-
-查看以索引前缀开头的索引:
-
-```bash
-curl -k -u elastic:{password} https://localhost:9200/_cat/indices/{index_prefix}*?v
-```
-
-### 模板
+## 模板
 
 查看全部的索引模板:
 
 ```bash
 curl -k -u elastic:{password} https://localhost:9200/_cat/templates?v
+```
+
+查看以索引模板前缀开头的索引模板:
+
+```bash
+curl -k -u elastic:{password} https://localhost:9200/_cat/templates/{template_prefix}*?v
 ```
 
 查看某个索引模板的内容:
@@ -147,12 +139,43 @@ curl -k -u elastic:{password} -XPUT https://localhost:9200/_index_template/{temp
 curl -k -u elastic:{password} -XDELETE https://localhost:9200/_index_template/{template}?pretty
 ```
 
+批量删除索引模板:
+
+```bash
+curl -k -u elastic:{password} -XDELETE https://localhost:9200/_index_template/{template1},{template2},{template3}?pretty
+```
+
+批量删除索引模板（shell 脚本）:
+
+```bash
+#!/bin/sh
+
+array=($(curl -k -u elastic:{password} https://localhost:9200/_cat/templates/{template_prefix}*?v | awk 'NR>1{print $1}'))
+
+for i in ${array[@]};do
+  echo $i
+  curl -k -u elastic:{password} -XDELETE https://localhost:9200/_index_template/$i?pretty
+done
+```
+
 ## 索引
 
 创建索引:
 
 ```bash
 curl -k -u elastic:{password} -XPUT https://localhost:9200/{index}?pretty
+```
+
+查看全部索引:
+
+```bash
+curl -k -u elastic:{password} https://localhost:9200/_cat/indices?v
+```
+
+查看以索引前缀开头的索引:
+
+```bash
+curl -k -u elastic:{password} https://localhost:9200/_cat/indices/{index_prefix}*?v
 ```
 
 查看单个索引信息:
@@ -171,6 +194,19 @@ curl -k -u elastic:{password} -XDELETE https://localhost:9200/{index}?pretty
 
 ```bash
 curl -k -u elastic:{password} -XDELETE https://localhost:9200/{index1},{index2},{index3}?pretty
+```
+
+批量删除索引（shell 脚本）:
+
+```bash
+#!/bin/sh
+
+array=($(curl -k -u elastic:{password} https://localhost:9200/_cat/indices/{index_prefix}*?v | awk 'NR>1{print $3}'))
+
+for i in ${array[@]};do
+  echo $i
+  curl -k -u elastic:{password} -XDELETE https://localhost:9200/$i?pretty
+done
 ```
 
 获取 mapping:
