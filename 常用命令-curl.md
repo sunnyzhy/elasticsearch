@@ -89,6 +89,12 @@ curl -k -u elastic:{password} https://localhost:9200/_cat/templates?v
 curl -k -u elastic:{password} https://localhost:9200/_index_template/{template}?pretty
 ```
 
+删除某个索引模板:
+
+```bash
+curl -k -u elastic:{password} -XDELETE https://localhost:9200/_index_template/{template}?pretty
+```
+
 ## 索引
 
 创建索引:
