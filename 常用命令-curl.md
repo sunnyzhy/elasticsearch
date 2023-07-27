@@ -167,6 +167,12 @@ curl -k -u elastic:{password} -XGET https://localhost:9200/{index}?pretty
 curl -k -u elastic:{password} -XDELETE https://localhost:9200/{index}?pretty
 ```
 
+批量删除索引:
+
+```bash
+curl -k -u elastic:{password} -XDELETE https://localhost:9200/{index1},{index2},{index3}?pretty
+```
+
 获取 mapping:
 
 ```bash
