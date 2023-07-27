@@ -404,3 +404,16 @@ export PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin
 
 # source /etc/profile
 ```
+
+## 17 index 的状态为 yellow
+
+此时需要确认 ```number_of_replicas``` 的配置是否符合 ```nodes``` 实际数量，如果只有一个 node，那么索引的副本数量就应该设置为 0；如果有两个 node，那么索引的副本数量就应该设置为 1。
+
+```bash
+curl -H "Content-Type: application/json" -XPUT 'http://localhost:9200/_all/_settings' -d '
+{
+    "index" : {
+       "number_of_replicas" : 0
+    }
+}'
+```
