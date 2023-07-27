@@ -55,7 +55,7 @@ curl -H "Content-Type: application/json" -XPUT -u elastic:password -k 'https://l
 }'
 ```
 
-但是还存在一个问题，下次创建新的索引时 ```number_of_replicas``` 仍然是 ```1```，此时就需要把模板里的 ```number_of_replicas``` 设置为 ```1``` 然后更新模板。
+但是还存在一个问题，下次创建新的索引时 ```number_of_replicas``` 仍然是 ```1```，此时就需要把模板里的 ```number_of_replicas``` 设置为 ```0``` 然后更新模板。
 
 ```
 注意
