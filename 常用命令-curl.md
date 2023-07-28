@@ -84,33 +84,13 @@ curl -k -u elastic:{password} https://localhost:9200/_index_template/{template}?
 创建某个索引模板：
 
 ```bash
-curl -k -u elastic:{password} -XPUT https://localhost:9200/_index_template/{template}?pretty -H 'Content-Type: application/json' -d'
+curl -k -u elastic:{password} -XPUT https://localhost:9200/_index_template/{template}?pretty -H 'Content-Type: application/json' -d '
 {
 	"index_patterns": ["log_*"],
 	"template": {
 		"settings": {
-			"index.translog.durability": "async",
-			"index.translog.sync_interval": "30s",
 			"number_of_shards": 5,
-			"number_of_replicas": 1,
-			"max_result_window": 20001,
-			"analysis": {
-				"analyzer": {
-					"ngram_analyzer": {
-						"type": "custom",
-						"tokenizer": "ngram_tokenizer",
-						"filter": "lowercase"
-					}
-				},
-				"tokenizer": {
-					"ngram_tokenizer": {
-						"type": "ngram",
-						"min_gram": "2",
-						"max_gram": "2",
-						"token_chars": ["letter", "digit", "punctuation", "symbol"]
-					}
-				}
-			}
+			"number_of_replicas": 1
 		},
 		"mappings": {
 			"_source": {
@@ -123,8 +103,6 @@ curl -k -u elastic:{password} -XPUT https://localhost:9200/_index_template/{temp
 				},
 				"name": {
 					"type": "text",
-					"analyzer": "ngram_analyzer",
-					"search_analyzer": "ngram_analyzer",
 					"index": true
 				}
 			}
