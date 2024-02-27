@@ -305,6 +305,12 @@ curl -k -u elastic:{password} -H "Content-Type:application/json" -XGET https://l
 curl -k -u elastic:{password} -H "Content-Type:application/json" -XGET https://localhost:9200/{index}/_search?pretty -d '{"query":{"range":{"age":{"gt":"20","lte":"25"}}}}'
 ```
 
+count 查询:
+
+```bash
+curl -k -u elastic:{password} -XGET https://localhost:9200/{index}/_count
+```
+
 ## ```_cluster```
 
 查看集群的健康状态:
