@@ -308,7 +308,11 @@ curl -k -u elastic:{password} -H "Content-Type:application/json" -XGET https://l
 count 查询:
 
 ```bash
-curl -k -u elastic:{password} -XGET https://localhost:9200/{index}/_count
+curl -k -u elastic:{password} -XGET https://localhost:9200/{index}/_count?pretty
+```
+
+```bash
+curl -k -u elastic:{password} -H "Content-Type:application/json" -XGET https://localhost:9200/{index}/_count?pretty -d '{"query":{"term":{"name":"xx"}}}'
 ```
 
 ## ```_cluster```
