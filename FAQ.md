@@ -423,3 +423,22 @@ curl -H "Content-Type: application/json" -XPUT 'http://localhost:9200/_all/_sett
 原因：当使用 term 查询的时候，由于是精确匹配，所以查询的关键字在 es 上的类型必须是 keyword 而不能是 text
 
 解决方法：检查 mapping 里的各个字段，把需要精准匹配的字段设置成 keyword 类型
+
+## 19 "type":"index_closed_exception","reason":"closed"
+
+原因：意味着你尝试对一个已关闭的索引执行操作
+
+解决方法：
+
+1. 查看索引状态
+   ```bash
+   curl -k -u elastic:password https://localhost:9200/_cat/indices?v | grep <index_name_prefix>
+   ```
+   or
+   ```bash
+   curl -k -u elastic:password https://localhost:9200/_cat/indices/<index_name>?v
+   ```
+2. 打开已关闭的索引
+   ```bash
+   curl -X POST -k -u elastic:password https://localhost:9200/<index_name>/_open
+   ```
