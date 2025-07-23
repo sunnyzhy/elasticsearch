@@ -315,6 +315,24 @@ curl -k -u elastic:{password} -XGET https://localhost:9200/{index}/_count?pretty
 curl -k -u elastic:{password} -H "Content-Type:application/json" -XGET https://localhost:9200/{index}/_count?pretty -d '{"query":{"term":{"name":"xx"}}}'
 ```
 
+打开已关闭的索引:
+
+```bash
+curl -k -u elastic:{password} -X POST https://localhost:9200/{index}/_open
+```
+
+批量打开已关闭的索引:
+
+```bash
+curl -k -u elastic:{password} -X POST https://localhost:9200/{index1,index2}/_open
+```
+
+or
+
+```bash
+curl -k -u elastic:{password} -X POST https://localhost:9200/{index-*}/_open
+```
+
 ## ```_cluster```
 
 查看集群的健康状态:
