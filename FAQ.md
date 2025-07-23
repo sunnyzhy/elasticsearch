@@ -432,13 +432,13 @@ curl -H "Content-Type: application/json" -XPUT 'http://localhost:9200/_all/_sett
 
 1. 查看索引状态
    ```bash
-   curl -k -u elastic:password https://localhost:9200/_cat/indices?v | grep <index_name_prefix>
+   curl -k -u elastic:{password} https://localhost:9200/_cat/indices?v | grep {index_name_prefix}
    ```
    or
    ```bash
-   curl -k -u elastic:password https://localhost:9200/_cat/indices/<index_name>?v
+   curl -k -u elastic:{password} https://localhost:9200/_cat/indices/{index_name}?v
    ```
 2. 打开已关闭的索引
    ```bash
-   curl -X POST -k -u elastic:password https://localhost:9200/<index_name>/_open
+   curl -X POST -k -u elastic:{password} https://localhost:9200/{index_name}/_open
    ```
